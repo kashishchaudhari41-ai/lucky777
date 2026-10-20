@@ -22,15 +22,21 @@ router.post("/bets/place", requireAuth, async (req, res) => {
     const market = await pool.query("SELECT id, is_betting_open, min_bet, max_bet FROM markets WHERE id = $1 AND status = 'active'", [marketId]);
     if (market.rows.length === 0) { res.status(404).json({ error: "Market not found" }); return; }
     if (!market.rows[0].is_betting_open) { res.status(400).json({ error: "Betting is closed for this market" }); return; }
-    const totalAmount = numbers.reduce((sum: number, n: { amount: number }) => sum + n.amount, 0);
-    const userBal = await pool.query("SELECT balance FROM users WHERE id = $1", [req.user!.userId]);
-    if (parseFloat(userBal.rows[0].balance) < totalAmount) {
-      res.status(400).json({ error: "Insufficient balance" }); return;
+    const minBet = parseFloat(market.rows[0].min_bet), maxBet = parseFloat(market.rows[0].max_bet);
+    if (!Array.isArray(numbers) || numbers.some((n: any) =>
+      typeof n?.number !== "string" || !n.number || !Number.isFinite(n.amount) || n.amount < minBet || n.amount > maxBet)) {
+      res.status(400).json({ error: `Each bet needs a number and an amount between ₹${minBet} and ₹${maxBet}` }); return;
     }
+    const totalAmount = numbers.reduce((sum: number, n: { amount: number }) => sum + n.amount, 0);
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      await client.query("UPDATE users SET balance = balance - $1 WHERE id = $2", [totalAmount, req.user!.userId]);
+      const debit = await client.query(
+        "UPDATE users SET balance = balance - $1 WHERE id = $2 AND balance >= $1 RETURNING id", [totalAmount, req.user!.userId]);
+      if (debit.rows.length === 0) {
+        await client.query("ROLLBACK");
+        res.status(400).json({ error: "Insufficient balance" }); return;
+      }
       const betRes = await client.query(
         `INSERT INTO bets (user_id, market_id, game_type, numbers, total_amount, status)
          VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING *`,
@@ -81,7 +87,11 @@ router.delete("/bets/:id", requireAuth, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query("UPDATE bets SET status = 'cancelled' WHERE id = $1", [req.params.id]);
+    const cancelled = await client.query("UPDATE bets SET status = 'cancelled' WHERE id = $1 AND status = 'pending' RETURNING id", [req.params.id]);
+    if (cancelled.rows.length === 0) {
+      await client.query("ROLLBACK");
+      res.status(400).json({ error: "Can only cancel pending bets" }); return;
+    }
     await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [bet.rows[0].total_amount, req.user!.userId]);
     await client.query("COMMIT");
     res.json({ message: "Bet cancelled", success: true });

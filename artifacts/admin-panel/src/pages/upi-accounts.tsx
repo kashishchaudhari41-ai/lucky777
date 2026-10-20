@@ -25,6 +25,15 @@ export default function UpiAccounts() {
   const updateUpi = useAdminUpdateUpi();
   const deleteUpi = useAdminDeleteUpi();
 
+  const handleQrFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1_500_000) { toast({ title: "Image too large (max 1.5 MB)", variant: "destructive" }); return; }
+    const reader = new FileReader();
+    reader.onload = () => setForm(f => ({ ...f, qrCodeUrl: String(reader.result) }));
+    reader.readAsDataURL(file);
+  };
+
   const handleEdit = (u: any) => {
     setEditId(u.id);
     setForm({ upiId: u.upiId, qrCodeUrl: u.qrCodeUrl || "", isActive: u.isActive });
@@ -76,8 +85,14 @@ export default function UpiAccounts() {
                   <Input value={form.upiId} onChange={e => setForm(f => ({ ...f, upiId: e.target.value }))} placeholder="name@upi" className="bg-[#111111] border-[#2a2a2a] text-white mt-1" data-testid="input-upi-id" />
                 </div>
                 <div>
-                  <Label className="text-[#a0a0a0]">QR Code URL (optional)</Label>
-                  <Input value={form.qrCodeUrl} onChange={e => setForm(f => ({ ...f, qrCodeUrl: e.target.value }))} placeholder="https://..." className="bg-[#111111] border-[#2a2a2a] text-white mt-1" data-testid="input-upi-qr" />
+                  <Label className="text-[#a0a0a0]">QR Code image (shown to players)</Label>
+                  <Input type="file" accept="image/*" onChange={handleQrFile} className="bg-[#111111] border-[#2a2a2a] text-white mt-1" data-testid="input-upi-qr" />
+                  {form.qrCodeUrl && (
+                    <div className="mt-2 flex items-center gap-3">
+                      <img src={form.qrCodeUrl} alt="QR preview" className="h-28 w-28 rounded bg-white object-contain" />
+                      <Button type="button" variant="outline" size="sm" onClick={() => setForm(f => ({ ...f, qrCodeUrl: "" }))}>Remove</Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <Label className="text-[#a0a0a0]">Active</Label>

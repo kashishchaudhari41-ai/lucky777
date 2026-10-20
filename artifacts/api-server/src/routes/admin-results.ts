@@ -20,21 +20,31 @@ async function settleWinners(resultId: string, marketId: string, openNumber: str
   for (const bet of bets.rows) {
     let won = false;
     let winAmt = 0;
+    const lastDigit = (v: string) => (v ? v.slice(-1) : "");
     for (const n of bet.numbers) {
-      if (bet.game_type === "jantri" && (n.number === openNumber || n.number === closeNumber)) {
+      const num = String(n.number);
+      if (bet.game_type === "jantri" && (num === openNumber || num === closeNumber)) {
         won = true; winAmt += n.amount * 9;
-      } else if (bet.game_type === "open" && n.number === openNumber) {
+      } else if (bet.game_type === "open" && num === openNumber) {
         won = true; winAmt += n.amount * 9;
-      } else if (bet.game_type === "crossing" && n.number === jodiNumber) {
+      } else if (bet.game_type === "crossing" && num === jodiNumber) {
         won = true; winAmt += n.amount * 90;
+      } else if (bet.game_type === "single" && num.length === 1 && (num === lastDigit(openNumber) || num === lastDigit(closeNumber))) {
+        won = true; winAmt += n.amount * 9;
+      } else if (bet.game_type === "jodi" && num.length === 2 && num === jodiNumber) {
+        won = true; winAmt += n.amount * 90;
+      } else if (bet.game_type === "panna" && num.length === 3 && (num === openNumber || num === closeNumber)) {
+        won = true; winAmt += n.amount * 140;
       }
     }
     const status = won ? "won" : "lost";
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      await client.query("UPDATE bets SET status = $1, win_amount = $2, result_id = $3, settled_at = NOW() WHERE id = $4",
+      const settled = await client.query(
+        "UPDATE bets SET status = $1, win_amount = $2, result_id = $3, settled_at = NOW() WHERE id = $4 AND status = 'pending' RETURNING id",
         [status, winAmt, resultId, bet.id]);
+      if (settled.rows.length === 0) { await client.query("ROLLBACK"); continue; }
       if (won && winAmt > 0) {
         await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [winAmt, bet.user_id]);
         await client.query("INSERT INTO transactions (user_id, type, amount, status, method) VALUES ($1, 'win', $2, 'completed', 'wallet')",

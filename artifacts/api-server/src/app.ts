@@ -31,7 +31,7 @@ app.use(
   }),
 );
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "3mb" })); // QR images are uploaded as data URLs
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

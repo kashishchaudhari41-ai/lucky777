@@ -64,3 +64,11 @@ pnpm run build          # typecheck + builds
 
 ## 8. Deploy on Render
 `render.yaml` builds the admin panel and API into one web service. Set env vars `DATABASE_URL` and `JWT_SECRET` in the Render dashboard.
+
+## Deposits (QR + UTR)
+1. Admin panel → **UPI Accounts** → add your UPI ID and upload your payment QR image (max 1.5 MB).
+2. Players see the QR and UPI ID on the Add Money screen, pay, then enter the 12-digit UPI transaction ID (UTR).
+3. Each UTR can be used **once, ever** (enforced by a unique database index; duplicates get HTTP 409).
+4. Admin panel → **Deposits** → match the UTR against your bank/UPI statement → Approve (wallet credited once) or Reject.
+
+The API applies small schema upgrades automatically on start (`artifacts/api-server/src/lib/migrate.ts`), so existing databases get the new columns and the unique UTR index. If your database already contains duplicate UTRs, the index cannot be created: remove the duplicates and restart.

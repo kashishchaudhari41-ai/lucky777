@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -50,8 +51,8 @@ export default function AddMoneyScreen() {
       Alert.alert("Invalid", "Minimum deposit is ₹100");
       return;
     }
-    if (!utrRef.trim()) {
-      Alert.alert("Required", "Enter UTR/Transaction Reference");
+    if (!/^\d{12}$/.test(utrRef.trim())) {
+      Alert.alert("Invalid", "Enter the 12-digit UPI transaction ID (UTR)");
       return;
     }
     try {
@@ -107,11 +108,20 @@ export default function AddMoneyScreen() {
           </View>
         )}
 
+        {upiData?.qrCodeUrl ? (
+          <View style={{ alignItems: "center", marginBottom: 16 }}>
+            <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 12 }}>
+              <Image source={{ uri: upiData.qrCodeUrl }} style={{ width: 220, height: 220 }} resizeMode="contain" />
+            </View>
+            <Text style={{ color: colors.mutedForeground, fontSize: 12, marginTop: 8 }}>Scan with any UPI app to pay</Text>
+          </View>
+        ) : null}
+
         <View style={s.stepsCard}>
           {[
-            "Copy the UPI ID above",
+            "Scan the QR code (or copy the UPI ID) above",
             "Pay using any UPI app (PhonePe, GPay, Paytm)",
-            "Enter the amount and UTR reference below",
+            "Enter the amount and the 12-digit UPI transaction ID (UTR) below. Each ID can be used only once",
             "Submit — approved within 30 minutes",
           ].map((step, i) => (
             <View key={i} style={s.step}>
@@ -144,14 +154,15 @@ export default function AddMoneyScreen() {
           keyboardType="number-pad"
         />
 
-        <Text style={s.label}>UTR / Transaction Reference</Text>
+        <Text style={s.label}>UPI Transaction ID (UTR)</Text>
         <TextInput
           style={s.input}
           placeholder="Enter 12-digit UTR number"
           placeholderTextColor={colors.mutedForeground}
           value={utrRef}
-          onChangeText={setUtrRef}
-          autoCapitalize="characters"
+          onChangeText={(t) => setUtrRef(t.replace(/\D/g, "").slice(0, 12))}
+        keyboardType="number-pad"
+          maxLength={12}
         />
 
         <Pressable

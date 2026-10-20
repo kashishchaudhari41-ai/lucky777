@@ -137,3 +137,23 @@ CREATE INDEX IF NOT EXISTS idx_bets_market_id ON bets(market_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_results_market_id ON results(market_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON user_notifications(user_id);
+
+-- Columns / tables the API uses that older schema versions lacked (idempotent)
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS processed_by UUID REFERENCES admin_users(id);
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS ip_address VARCHAR(64);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title VARCHAR(200) NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(50) DEFAULT 'info',
+  target_users JSONB,
+  target_market UUID,
+  created_by UUID REFERENCES admin_users(id),
+  sent_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE user_notifications ADD COLUMN IF NOT EXISTS notification_id UUID;
+
+-- A UPI transaction ID (UTR) can be submitted only once, ever
+CREATE UNIQUE INDEX IF NOT EXISTS uq_transactions_deposit_utr
+  ON transactions (utr_number) WHERE type = 'deposit' AND utr_number IS NOT NULL;
