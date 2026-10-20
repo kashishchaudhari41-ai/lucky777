@@ -34,8 +34,11 @@ INSERT INTO app_settings (key, value) VALUES
   ('app_name',            'Lucky777'),
   ('whatsapp_number',     '+91 9999999999'),
   ('telegram_link',       'https://t.me/lucky777'),
-  ('min_deposit',         '100'),
-  ('min_withdrawal',      '100'),
+  ('min_deposit',         '200'),
+  ('min_withdrawal',      '500'),
+  ('payout_single',       '9'),
+  ('payout_jodi',         '90'),
+  ('payout_panna',        '140'),
   ('referral_commission', '5'),
   ('maintenance_mode',    'false'),
   ('betting_lock_minutes','30')

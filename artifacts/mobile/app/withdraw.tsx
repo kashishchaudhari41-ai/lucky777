@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useWithdrawalRequest, useGetUserBalance } from "@workspace/api-client-react";
 import { useAuth } from "@/context/AuthContext";
+import { useAppConfig } from "@/hooks/useAppConfig";
 import { useColors } from "@/hooks/useColors";
 
 const QUICK_AMOUNTS = [100, 200, 500, 1000, 2000, 5000];
@@ -28,6 +29,7 @@ export default function WithdrawScreen() {
   const { refreshBalance } = useAuth();
   const [amount, setAmount] = useState("");
   const [upiId, setUpiId] = useState("");
+  const { minWithdrawal } = useAppConfig();
 
   const { data: balData } = useGetUserBalance();
   const withdraw = useWithdrawalRequest();
@@ -36,16 +38,16 @@ export default function WithdrawScreen() {
 
   async function handleSubmit() {
     const amt = parseInt(amount, 10);
-    if (!amt || amt < 100) {
-      Alert.alert("Invalid", "Minimum withdrawal is ₹100");
+    if (!amt || amt < minWithdrawal) {
+      Alert.alert("Invalid", `Minimum withdrawal is ₹${minWithdrawal}`);
       return;
     }
     if (amt > balance) {
       Alert.alert("Insufficient", "You don't have enough balance");
       return;
     }
-    if (!upiId.trim()) {
-      Alert.alert("Required", "Enter your UPI ID");
+    if (!/^[\w.\-]{2,}@[A-Za-z][A-Za-z0-9.\-]{1,}$/.test(upiId.trim())) {
+      Alert.alert("Invalid", "Enter a valid UPI ID (e.g. name@upi)");
       return;
     }
     try {
@@ -105,7 +107,7 @@ export default function WithdrawScreen() {
         </View>
         <TextInput
           style={s.input}
-          placeholder="Enter amount (min ₹100)"
+          placeholder={`Enter amount (min ₹${minWithdrawal})`}
           placeholderTextColor={colors.mutedForeground}
           value={amount}
           onChangeText={(t) => setAmount(t.replace(/\D/g, ""))}
@@ -126,7 +128,7 @@ export default function WithdrawScreen() {
         <View style={s.noteCard}>
           <Feather name="info" size={14} color={colors.warning} />
           <Text style={s.noteText}>
-            Withdrawals are processed within 24 hours. Minimum ₹100.
+            Withdrawals are processed within 24 hours. Minimum ₹{minWithdrawal}.
           </Text>
         </View>
 

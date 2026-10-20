@@ -15,4 +15,7 @@ export interface AppSettings {
   referralCommission?: number;
   maintenanceMode?: boolean;
   bettingLockMinutes?: number;
+  payoutSingle?: number;
+  payoutJodi?: number;
+  payoutPanna?: number;
 }

@@ -72,3 +72,10 @@ pnpm run build          # typecheck + builds
 4. Admin panel → **Deposits** → match the UTR against your bank/UPI statement → Approve (wallet credited once) or Reject.
 
 The API applies small schema upgrades automatically on start (`artifacts/api-server/src/lib/migrate.ts`), so existing databases get the new columns and the unique UTR index. If your database already contains duplicate UTRs, the index cannot be created: remove the duplicates and restart.
+
+## Admin-controlled limits and payouts
+Admin panel → **Settings**:
+- **Min Deposit** (default ₹200) and **Min Withdrawal** (default ₹500). The API enforces them and the app shows them.
+- **Payout rates**: Single ×9, Jodi ×90, Panna ×140 by default. Winnings = bet amount × rate. Changes apply to results entered after saving.
+
+Withdrawals are UPI-only: the player types a UPI ID (validated), no QR or bank details. Deposits are paid to the admin's QR/UPI.

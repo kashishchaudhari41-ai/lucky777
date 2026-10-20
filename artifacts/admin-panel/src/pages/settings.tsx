@@ -18,7 +18,8 @@ export default function Settings() {
 
   const [form, setForm] = useState({
     appName: "Lucky777", whatsappNumber: "+91 9999999999", telegramLink: "https://t.me/lucky777",
-    minDeposit: 100, minWithdrawal: 100, referralCommission: 5, maintenanceMode: false, bettingLockMinutes: 30
+    minDeposit: 200, minWithdrawal: 500, referralCommission: 5, maintenanceMode: false, bettingLockMinutes: 30,
+    payoutSingle: 9, payoutJodi: 90, payoutPanna: 140
   });
 
   useEffect(() => {
@@ -27,11 +28,14 @@ export default function Settings() {
         appName: data.appName || "Lucky777",
         whatsappNumber: data.whatsappNumber || "+91 9999999999",
         telegramLink: data.telegramLink || "https://t.me/lucky777",
-        minDeposit: data.minDeposit || 100,
-        minWithdrawal: data.minWithdrawal || 100,
+        minDeposit: data.minDeposit || 200,
+        minWithdrawal: data.minWithdrawal || 500,
         referralCommission: data.referralCommission || 5,
         maintenanceMode: data.maintenanceMode || false,
         bettingLockMinutes: data.bettingLockMinutes || 30,
+        payoutSingle: data.payoutSingle || 9,
+        payoutJodi: data.payoutJodi || 90,
+        payoutPanna: data.payoutPanna || 140,
       });
     }
   }, [data]);
@@ -86,6 +90,23 @@ export default function Settings() {
                   <Input type="number" value={(form as any)[key]} onChange={e => setForm(f => ({ ...f, [key]: Number(e.target.value) }))} className="bg-[#111111] border-[#2a2a2a] text-white mt-1" data-testid={`input-setting-${key}`} />
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#1a1a1a] border-[#2a2a2a]">
+            <CardHeader><CardTitle className="text-white text-base">Payout Rates (win = bet amount × rate)</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              {[
+                ["payoutSingle", "Single (1 digit) payout ×"],
+                ["payoutJodi", "Jodi (2 digits) payout ×"],
+                ["payoutPanna", "Panna (3 digits) payout ×"],
+              ].map(([key, label]) => (
+                <div key={key}>
+                  <Label className="text-[#a0a0a0] text-sm">{label}</Label>
+                  <Input type="number" min={1} value={(form as any)[key]} onChange={e => setForm(f => ({ ...f, [key]: Number(e.target.value) }))} className="bg-[#111111] border-[#2a2a2a] text-white mt-1" data-testid={`input-setting-${key}`} />
+                </div>
+              ))}
+              <p className="text-xs text-[#a0a0a0]">Applies to results entered after saving.</p>
             </CardContent>
           </Card>
 

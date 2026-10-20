@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAddMoneyRequest, useGetUpiDetails } from "@workspace/api-client-react";
 import { useAuth } from "@/context/AuthContext";
+import { useAppConfig } from "@/hooks/useAppConfig";
 import { useColors } from "@/hooks/useColors";
 
 const QUICK_AMOUNTS = [100, 200, 500, 1000, 2000, 5000];
@@ -31,6 +32,7 @@ export default function AddMoneyScreen() {
   const [amount, setAmount] = useState("");
   const [utrRef, setUtrRef] = useState("");
   const [copied, setCopied] = useState(false);
+  const { minDeposit } = useAppConfig();
 
   const { data: upiData } = useGetUpiDetails();
   const addMoney = useAddMoneyRequest();
@@ -47,8 +49,8 @@ export default function AddMoneyScreen() {
 
   async function handleSubmit() {
     const amt = parseInt(amount, 10);
-    if (!amt || amt < 100) {
-      Alert.alert("Invalid", "Minimum deposit is ₹100");
+    if (!amt || amt < minDeposit) {
+      Alert.alert("Invalid", `Minimum deposit is ₹${minDeposit}`);
       return;
     }
     if (!/^\d{12}$/.test(utrRef.trim())) {
@@ -147,7 +149,7 @@ export default function AddMoneyScreen() {
         </View>
         <TextInput
           style={s.input}
-          placeholder="Enter amount (min ₹100)"
+          placeholder={`Enter amount (min ₹${minDeposit})`}
           placeholderTextColor={colors.mutedForeground}
           value={amount}
           onChangeText={(t) => setAmount(t.replace(/\D/g, ""))}

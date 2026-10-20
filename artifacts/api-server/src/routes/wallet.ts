@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAuth } from "../middlewares/auth.js";
+import { getNumberSetting, DEFAULTS } from "../lib/settings.js";
 
 const router = Router();
 
@@ -17,7 +18,8 @@ router.post("/wallet/add-money-request", requireAuth, async (req, res) => {
   const amount = Number(req.body.amount);
   const utrNumber = String(req.body.utrNumber ?? "").replace(/\s+/g, "").toUpperCase();
   const { screenshotUrl } = req.body;
-  if (!Number.isFinite(amount) || amount < 100) { res.status(400).json({ error: "Minimum deposit ₹100" }); return; }
+  const minDeposit = await getNumberSetting("min_deposit");
+  if (!Number.isFinite(amount) || amount < minDeposit) { res.status(400).json({ error: `Minimum deposit ₹${minDeposit}` }); return; }
   if (!/^\d{12}$/.test(utrNumber)) {
     res.status(400).json({ error: "Enter a valid 12-digit UPI transaction ID (UTR)" }); return;
   }
@@ -38,13 +40,14 @@ router.post("/wallet/add-money-request", requireAuth, async (req, res) => {
 });
 
 router.post("/wallet/withdrawal-request", requireAuth, async (req, res) => {
-  const { method, bankAccountNumber, ifscCode, accountHolderName, upiId } = req.body;
   const amount = Number(req.body.amount);
-  if (!Number.isFinite(amount) || amount < 100) { res.status(400).json({ error: "Minimum withdrawal ₹100" }); return; }
+  const upiId = String(req.body.upiId ?? "").trim();
+  const minWithdrawal = await getNumberSetting("min_withdrawal");
+  if (!Number.isFinite(amount) || amount < minWithdrawal) { res.status(400).json({ error: `Minimum withdrawal ₹${minWithdrawal}` }); return; }
+  if (!/^[\w.\-]{2,}@[A-Za-z][A-Za-z0-9.\-]{1,}$/.test(upiId)) { res.status(400).json({ error: "Enter a valid UPI ID (e.g. name@upi)" }); return; }
   try {
-    const bankDetails = method === "bank"
-      ? { accountNumber: bankAccountNumber, ifscCode, accountHolderName }
-      : { upiId };
+    const bankDetails = { upiId };
+    const method = "upi";
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
@@ -90,3 +93,4 @@ router.get("/wallet/upi-details", requireAuth, async (req, res) => {
 });
 
 export default router;
+

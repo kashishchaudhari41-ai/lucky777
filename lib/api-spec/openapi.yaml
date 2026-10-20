@@ -2201,6 +2201,12 @@ components:
           type: boolean
         bettingLockMinutes:
           type: integer
+        payoutSingle:
+          type: number
+        payoutJodi:
+          type: number
+        payoutPanna:
+          type: number
       required: [appName]
 
     AdminDashboard:

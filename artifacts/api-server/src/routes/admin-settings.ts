@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
+import { getNumberSetting } from "../lib/settings.js";
 
 const router = Router();
 
@@ -20,29 +21,33 @@ async function setSetting(key: string, value: any) {
 
 router.get("/admin/settings", requireAdminAuth, async (req, res) => {
   try {
-    const [appName, whatsapp, telegram, minDep, minWith, referralComm, maintenance, lockMins] = await Promise.all([
+    const [appName, whatsapp, telegram, minDep, minWith, referralComm, maintenance, lockMins, pSingle, pJodi, pPanna] = await Promise.all([
       getSetting("app_name", "Lucky777"),
       getSetting("whatsapp_number", "+91 9999999999"),
       getSetting("telegram_link", "https://t.me/lucky777"),
-      getSetting("min_deposit", 100),
-      getSetting("min_withdrawal", 100),
+      getNumberSetting("min_deposit"),
+      getNumberSetting("min_withdrawal"),
       getSetting("referral_commission", 5),
       getSetting("maintenance_mode", false),
-      getSetting("betting_lock_minutes", 30)
+      getSetting("betting_lock_minutes", 30),
+      getNumberSetting("payout_single"), getNumberSetting("payout_jodi"), getNumberSetting("payout_panna")
     ]);
-    res.json({ appName, whatsappNumber: whatsapp, telegramLink: telegram, minDeposit: minDep, minWithdrawal: minWith, referralCommission: referralComm, maintenanceMode: maintenance, bettingLockMinutes: lockMins });
+    res.json({ appName, whatsappNumber: whatsapp, telegramLink: telegram, minDeposit: minDep, minWithdrawal: minWith, referralCommission: referralComm, maintenanceMode: maintenance, bettingLockMinutes: lockMins, payoutSingle: pSingle, payoutJodi: pJodi, payoutPanna: pPanna });
   } catch (err) {
     res.status(500).json({ error: "Failed to get settings" });
   }
 });
 
 router.put("/admin/settings", requireAdminAuth, async (req, res) => {
-  const { appName, whatsappNumber, telegramLink, minDeposit, minWithdrawal, referralCommission, maintenanceMode, bettingLockMinutes } = req.body;
+  const { appName, whatsappNumber, telegramLink, minDeposit, minWithdrawal, referralCommission, maintenanceMode, bettingLockMinutes, payoutSingle, payoutJodi, payoutPanna } = req.body;
+  const positive = [minDeposit, minWithdrawal, payoutSingle, payoutJodi, payoutPanna];
+  if (positive.some(v => v !== undefined && !(Number(v) > 0))) { res.status(400).json({ error: "Amounts and payout rates must be positive numbers" }); return; }
   try {
     const updates: [string, any][] = [
       ["app_name", appName], ["whatsapp_number", whatsappNumber], ["telegram_link", telegramLink],
       ["min_deposit", minDeposit], ["min_withdrawal", minWithdrawal], ["referral_commission", referralCommission],
-      ["maintenance_mode", maintenanceMode], ["betting_lock_minutes", bettingLockMinutes]
+      ["maintenance_mode", maintenanceMode], ["betting_lock_minutes", bettingLockMinutes],
+      ["payout_single", payoutSingle], ["payout_jodi", payoutJodi], ["payout_panna", payoutPanna]
     ];
     for (const [key, val] of updates) {
       if (val !== undefined) await setSetting(key, val);

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
+import { getNumberSetting } from "../lib/settings.js";
 
 const router = Router();
 
@@ -17,6 +18,8 @@ async function settleWinners(resultId: string, marketId: string, openNumber: str
     "SELECT id, user_id, numbers, total_amount, game_type FROM bets WHERE market_id = $1 AND status = 'pending'",
     [marketId]
   );
+  const [pSingle, pJodi, pPanna] = await Promise.all([
+    getNumberSetting("payout_single"), getNumberSetting("payout_jodi"), getNumberSetting("payout_panna")]);
   for (const bet of bets.rows) {
     let won = false;
     let winAmt = 0;
@@ -24,17 +27,17 @@ async function settleWinners(resultId: string, marketId: string, openNumber: str
     for (const n of bet.numbers) {
       const num = String(n.number);
       if (bet.game_type === "jantri" && (num === openNumber || num === closeNumber)) {
-        won = true; winAmt += n.amount * 9;
+        won = true; winAmt += n.amount * pSingle;
       } else if (bet.game_type === "open" && num === openNumber) {
-        won = true; winAmt += n.amount * 9;
+        won = true; winAmt += n.amount * pSingle;
       } else if (bet.game_type === "crossing" && num === jodiNumber) {
-        won = true; winAmt += n.amount * 90;
+        won = true; winAmt += n.amount * pJodi;
       } else if (bet.game_type === "single" && num.length === 1 && (num === lastDigit(openNumber) || num === lastDigit(closeNumber))) {
-        won = true; winAmt += n.amount * 9;
+        won = true; winAmt += n.amount * pSingle;
       } else if (bet.game_type === "jodi" && num.length === 2 && num === jodiNumber) {
-        won = true; winAmt += n.amount * 90;
+        won = true; winAmt += n.amount * pJodi;
       } else if (bet.game_type === "panna" && num.length === 3 && (num === openNumber || num === closeNumber)) {
-        won = true; winAmt += n.amount * 140;
+        won = true; winAmt += n.amount * pPanna;
       }
     }
     const status = won ? "won" : "lost";
