@@ -1,0 +1,42 @@
+name: Build Android APK
+
+# Run from the GitHub "Actions" tab -> "Build Android APK" -> "Run workflow".
+# One-time setup: add the repository secret EXPO_TOKEN (expo.dev -> Account settings -> Access tokens).
+on:
+  workflow_dispatch:
+    inputs:
+      api_domain:
+        description: "Your deployed API host, without https:// (e.g. lucky777.onrender.com)"
+        required: true
+      profile:
+        description: "EAS build profile"
+        default: preview
+        type: choice
+        options: [preview, production]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --no-frozen-lockfile
+      - name: Point the app at your API
+        working-directory: artifacts/mobile
+        run: sed -i "s#\"EXPO_PUBLIC_DOMAIN\": \".*\"#\"EXPO_PUBLIC_DOMAIN\": \"${{ inputs.api_domain }}\"#" eas.json
+      - name: Build APK on EAS
+        working-directory: artifacts/mobile
+        run: eas build --platform android --profile ${{ inputs.profile }} --non-interactive --wait
+      - name: Print download link
+        working-directory: artifacts/mobile
+        run: eas build:list --platform android --limit 1 --non-interactive --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log('APK:',JSON.parse(s)[0]?.artifacts?.buildUrl))"

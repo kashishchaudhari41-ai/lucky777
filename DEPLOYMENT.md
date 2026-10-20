@@ -56,3 +56,9 @@ Render → service → Settings → Custom Domains → add `api.yourdomain.com`,
 - [ ] `cors()` in `artifacts/api-server/src/app.ts` is open to all origins; restrict to your domain if you want
 - [ ] Neon backups enabled
 - [ ] `EXPO_PUBLIC_DOMAIN` points to the final host before building the APK
+
+## Build from GitHub (automatic)
+- **API + admin panel:** Render watches the GitHub repo. Every push to `main` redeploys automatically (Render → New → Blueprint → pick this repo).
+- **Checks:** `.github/workflows/ci.yml` runs typecheck and builds on every push / pull request.
+- **Android APK:** GitHub → Actions → **Build Android APK** → Run workflow, enter your API host (e.g. `lucky777.onrender.com`). The run prints the APK download link.
+  - One-time: create a free Expo account, run `eas init` in `artifacts/mobile` (this replaces the old `projectId` in `app.json` with yours), commit it, and add your Expo access token as the repository secret `EXPO_TOKEN`.
