@@ -3,7 +3,7 @@ services:
     name: lucky777
     runtime: node
     plan: free
-    buildCommand: npm install -g pnpm@10 && pnpm install --no-frozen-lockfile && BASE_PATH=/ PORT=3000 pnpm --filter @workspace/admin-panel run build && pnpm --filter @workspace/api-server run build
+    buildCommand: npx -y pnpm@10 install --no-frozen-lockfile && BASE_PATH=/ PORT=3000 npx -y pnpm@10 --filter @workspace/admin-panel run build && npx -y pnpm@10 --filter @workspace/api-server run build
     startCommand: node --enable-source-maps ./artifacts/api-server/dist/index.mjs
     envVars:
       - key: NODE_ENV
