@@ -9,7 +9,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_DOMAIN": "our-empire-satta.onrender.com"
+        "EXPO_PUBLIC_DOMAIN": "lucky777-lssy.onrender.com"
       }
     },
     "preview": {
@@ -17,7 +17,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_DOMAIN": "our-empire-satta.onrender.com"
+        "EXPO_PUBLIC_DOMAIN": "lucky777-lssy.onrender.com"
       }
     }
   },
