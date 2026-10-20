@@ -21,9 +21,9 @@ async function setSetting(key: string, value: any) {
 router.get("/admin/settings", requireAdminAuth, async (req, res) => {
   try {
     const [appName, whatsapp, telegram, minDep, minWith, referralComm, maintenance, lockMins] = await Promise.all([
-      getSetting("app_name", "Our Empire"),
+      getSetting("app_name", "Lucky777"),
       getSetting("whatsapp_number", "+91 9999999999"),
-      getSetting("telegram_link", "https://t.me/ourempire"),
+      getSetting("telegram_link", "https://t.me/lucky777"),
       getSetting("min_deposit", 100),
       getSetting("min_withdrawal", 100),
       getSetting("referral_commission", 5),

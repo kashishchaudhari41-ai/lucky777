@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Our Empire - Satta Matka",
+    "name": "Lucky777 - Satta Matka",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ourempire",
+    "scheme": "lucky777",
     "userInterfaceStyle": "dark",
     "newArchEnabled": false,
     "splash": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "backgroundColor": "#0a0a0a",
-      "package": "com.ourempire.sattamatka",
+      "package": "com.lucky777.sattamatka",
       "versionCode": 2
     },
     "web": {

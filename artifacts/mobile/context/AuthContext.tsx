@@ -2,8 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const TOKEN_KEY = "ourempire_token";
-const USER_KEY = "ourempire_user";
+const TOKEN_KEY = "lucky777_token";
+const USER_KEY = "lucky777_user";
 
 if (process.env.EXPO_PUBLIC_DOMAIN) {
   setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);

@@ -51,7 +51,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="p-6 border-b border-[#2a2a2a]">
           <div className="flex items-center gap-3 text-[#bfdb81]">
             <Trophy className="h-8 w-8 text-[#48723e]" />
-            <h1 className="text-xl font-bold tracking-wider">OUR EMPIRE</h1>
+            <h1 className="text-xl font-bold tracking-wider">LUCKY777</h1>
           </div>
           <p className="text-xs text-[#a0a0a0] mt-1 font-mono uppercase tracking-widest">Admin Control</p>
         </div>

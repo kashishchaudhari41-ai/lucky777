@@ -1,5 +1,5 @@
 -- ============================================================
--- Our Empire - Satta Matka  |  Demo Seed Data
+-- Lucky777 - Satta Matka  |  Demo Seed Data
 -- Run: psql "$DATABASE_URL" -f scripts/seed-demo-data.sql
 --
 -- Admin logins:  admin / Admin@123
@@ -26,14 +26,14 @@ ON CONFLICT DO NOTHING;
 
 -- ── UPI account ───────────────────────────────────────────────
 INSERT INTO upi_accounts (upi_id, is_active)
-VALUES ('ourempire@paytm', true)
+VALUES ('lucky777@paytm', true)
 ON CONFLICT DO NOTHING;
 
 -- ── App settings ─────────────────────────────────────────────
 INSERT INTO app_settings (key, value) VALUES
-  ('app_name',            'Our Empire'),
+  ('app_name',            'Lucky777'),
   ('whatsapp_number',     '+91 9999999999'),
-  ('telegram_link',       'https://t.me/ourempire'),
+  ('telegram_link',       'https://t.me/lucky777'),
   ('min_deposit',         '100'),
   ('min_withdrawal',      '100'),
   ('referral_commission', '5'),

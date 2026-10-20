@@ -73,7 +73,7 @@ router.get("/wallet/history", requireAuth, async (req, res) => {
 router.get("/wallet/upi-details", requireAuth, async (req, res) => {
   const result = await pool.query("SELECT upi_id, qr_code_url FROM upi_accounts WHERE is_active = true ORDER BY RANDOM() LIMIT 1");
   if (result.rows.length === 0) {
-    res.json({ upiId: "ourempire@upi", qrCodeUrl: null });
+    res.json({ upiId: "lucky777@upi", qrCodeUrl: null });
     return;
   }
   res.json({ upiId: result.rows[0].upi_id, qrCodeUrl: result.rows[0].qr_code_url });

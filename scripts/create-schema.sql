@@ -1,4 +1,4 @@
--- Our Empire - Satta Matka Complete Database Schema
+-- Lucky777 - Satta Matka Complete Database Schema
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

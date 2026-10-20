@@ -1,5 +1,5 @@
 /**
- * Demo data seed script for Our Empire - Satta Matka
+ * Demo data seed script for Lucky777 - Satta Matka
  * Run from workspace root: node scripts/seed-demo-data.mjs
  *
  * Creates:
@@ -78,16 +78,16 @@ async function run() {
     // ── UPI account ──────────────────────────────────────────────────────────
     await client.query(
       `INSERT INTO upi_accounts (upi_id, is_active)
-       VALUES ('ourempire@paytm', true)
+       VALUES ('lucky777@paytm', true)
        ON CONFLICT DO NOTHING`
     );
-    console.log("✅  UPI account  → ourempire@paytm");
+    console.log("✅  UPI account  → lucky777@paytm");
 
     // ── App settings ─────────────────────────────────────────────────────────
     const settings = [
-      ["app_name", "Our Empire"],
+      ["app_name", "Lucky777"],
       ["whatsapp_number", "+91 9999999999"],
-      ["telegram_link", "https://t.me/ourempire"],
+      ["telegram_link", "https://t.me/lucky777"],
       ["min_deposit", "100"],
       ["min_withdrawal", "100"],
       ["referral_commission", "5"],

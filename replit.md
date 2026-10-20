@@ -1,4 +1,4 @@
-# Our Empire - Satta Matka
+# Lucky777 - Satta Matka
 
 A complete Satta Matka betting platform with Android mobile app, admin panel, and REST API backend.
 
@@ -61,7 +61,7 @@ A complete Satta Matka betting platform with Android mobile app, admin panel, an
 ## Gotchas
 
 - Database tables were created with raw SQL (not drizzle push) — the lib/db/src/schema/index.ts is intentionally empty
-- Admin token stored in localStorage as "adminToken"; user token in AsyncStorage as "ourempire_token"
+- Admin token stored in localStorage as "adminToken"; user token in AsyncStorage as "lucky777_token"
 - Always run `pnpm install --no-frozen-lockfile` after adding new packages
 - The API server must be running before admin panel API calls work
 - bets.game_type CHECK constraint includes: jantri, open, crossing, no-to-no, single, jodi, panna

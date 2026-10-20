@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: our-empire-satta-matka
+    name: lucky777
     runtime: node
     plan: free
     buildCommand: npm install pnpm@10 --no-save --ignore-scripts && npx pnpm install --no-frozen-lockfile && BASE_PATH=/ PORT=3000 npx pnpm --filter @workspace/admin-panel run build && npx pnpm --filter @workspace/api-server run build

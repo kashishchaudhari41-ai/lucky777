@@ -17,16 +17,16 @@ export default function Settings() {
   const update = useAdminUpdateSettings();
 
   const [form, setForm] = useState({
-    appName: "Our Empire", whatsappNumber: "+91 9999999999", telegramLink: "https://t.me/ourempire",
+    appName: "Lucky777", whatsappNumber: "+91 9999999999", telegramLink: "https://t.me/lucky777",
     minDeposit: 100, minWithdrawal: 100, referralCommission: 5, maintenanceMode: false, bettingLockMinutes: 30
   });
 
   useEffect(() => {
     if (data) {
       setForm({
-        appName: data.appName || "Our Empire",
+        appName: data.appName || "Lucky777",
         whatsappNumber: data.whatsappNumber || "+91 9999999999",
-        telegramLink: data.telegramLink || "https://t.me/ourempire",
+        telegramLink: data.telegramLink || "https://t.me/lucky777",
         minDeposit: data.minDeposit || 100,
         minWithdrawal: data.minWithdrawal || 100,
         referralCommission: data.referralCommission || 5,

@@ -93,7 +93,7 @@ export default function RegisterScreen() {
         >
           <View style={s.logoWrap}>
             <Image source={require("@/assets/images/icon.png")} style={s.logo} />
-            <Text style={s.brand}>OUR EMPIRE</Text>
+            <Text style={s.brand}>LUCKY777</Text>
           </View>
 
           <View style={s.card}>

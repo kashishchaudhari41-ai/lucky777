@@ -97,9 +97,6 @@ export default function AddMoneyScreen() {
             <View style={{ flex: 1 }}>
               <Text style={s.upiLabel}>Pay to UPI ID</Text>
               <Text style={s.upiId}>{upiData.upiId}</Text>
-              {upiData.accountName && (
-                <Text style={s.upiName}>{upiData.accountName}</Text>
-              )}
             </View>
             <Pressable onPress={copyUpi} style={s.copyBtn}>
               <Feather name={copied ? "check" : "copy"} size={16} color={copied ? colors.success : colors.primary} />

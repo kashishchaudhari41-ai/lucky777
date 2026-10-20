@@ -2,19 +2,12 @@ import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import type { Market } from "@workspace/api-client-react";
+
 import { useColors } from "@/hooks/useColors";
 
 interface MarketCardProps {
-  market: {
-    id: string;
-    name: string;
-    openTime: string;
-    closeTime: string;
-    isActive: boolean;
-    openResult?: string | null;
-    closeResult?: string | null;
-    status?: string;
-  };
+  market: Market;
   onPress: () => void;
 }
 
@@ -24,9 +17,9 @@ function getStatus(market: MarketCardProps["market"]) {
   const openDt = new Date(`${todayDate}T${market.openTime}`);
   const closeDt = new Date(`${todayDate}T${market.closeTime}`);
 
-  if (!market.isActive) return "closed";
+  if (market.status === "inactive") return "closed";
   if (now < openDt) return "upcoming";
-  if (now >= openDt && now < closeDt) return "open";
+  if (now >= openDt && now < closeDt) return market.isBettingOpen ? "open" : "closed";
   return "closed";
 }
 
@@ -146,21 +139,21 @@ export function MarketCard({ market, onPress }: MarketCardProps) {
       <View style={s.resultRow}>
         <View style={s.resultBlock}>
           <Text style={s.resultLabel}>OPEN</Text>
-          <Text style={s.resultNum}>{formatResult(market.openResult)}</Text>
+          <Text style={s.resultNum}>{formatResult(market.latestResult?.openNumber)}</Text>
         </View>
         <Text style={s.dash}>-</Text>
         <View style={s.resultBlock}>
           <Text style={s.resultLabel}>JODI</Text>
           <Text style={s.resultNum}>
-            {market.openResult && market.closeResult
-              ? `${market.openResult?.slice(-1) ?? "*"}${market.closeResult?.slice(-1) ?? "*"}`
+            {market.latestResult?.openNumber && market.latestResult?.closeNumber
+              ? `${market.latestResult?.openNumber?.slice(-1) ?? "*"}${market.latestResult?.closeNumber?.slice(-1) ?? "*"}`
               : "**"}
           </Text>
         </View>
         <Text style={s.dash}>-</Text>
         <View style={s.resultBlock}>
           <Text style={s.resultLabel}>CLOSE</Text>
-          <Text style={s.resultNum}>{formatResult(market.closeResult)}</Text>
+          <Text style={s.resultNum}>{formatResult(market.latestResult?.closeNumber)}</Text>
         </View>
       </View>
 

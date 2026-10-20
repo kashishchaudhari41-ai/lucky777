@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "ourempire_jwt_secret_2024";
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET must be set in production");
+}
+const JWT_SECRET = process.env.JWT_SECRET || "lucky777_jwt_secret_2024";
 
 export interface AuthPayload {
   userId: string;

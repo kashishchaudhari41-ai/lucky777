@@ -113,9 +113,9 @@ export default function MarketDetailScreen() {
         </Pressable>
         <Text style={s.headerTitle}>{market.name}</Text>
         <View style={s.statusBadge}>
-          <View style={[s.statusDot, { backgroundColor: market.isActive ? colors.success : colors.mutedForeground }]} />
-          <Text style={[s.statusText, { color: market.isActive ? colors.success : colors.mutedForeground }]}>
-            {market.isActive ? "Open" : "Closed"}
+          <View style={[s.statusDot, { backgroundColor: market.isBettingOpen ? colors.success : colors.mutedForeground }]} />
+          <Text style={[s.statusText, { color: market.isBettingOpen ? colors.success : colors.mutedForeground }]}>
+            {market.isBettingOpen ? "Open" : "Closed"}
           </Text>
         </View>
       </View>
@@ -137,7 +137,7 @@ export default function MarketDetailScreen() {
           <View style={s.infoBlock}>
             <Text style={s.infoLabel}>Result</Text>
             <Text style={[s.infoValue, { color: colors.gold }]}>
-              {market.openResult ?? "*"}-{market.closeResult ?? "*"}
+              {market.latestResult?.openNumber ?? "*"}-{market.latestResult?.closeNumber ?? "*"}
             </Text>
           </View>
         </View>

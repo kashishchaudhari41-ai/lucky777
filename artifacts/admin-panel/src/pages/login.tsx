@@ -32,7 +32,7 @@ export default function Login() {
     try {
       const res = await loginMutation.mutateAsync({ data: { username, password } });
       setAdminToken(res.token);
-      toast({ title: "Welcome to Our Empire", description: "Login successful" });
+      toast({ title: "Welcome to Lucky777", description: "Login successful" });
       setLocation("/dashboard");
     } catch (err: any) {
       toast({ 
@@ -54,7 +54,7 @@ export default function Login() {
           <div className="h-16 w-16 bg-gradient-to-br from-[#1a4718] to-[#48723e] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#48723e]/20">
             <Trophy className="h-8 w-8 text-[#bfdb81]" />
           </div>
-          <h1 className="text-3xl font-bold tracking-widest text-white">OUR EMPIRE</h1>
+          <h1 className="text-3xl font-bold tracking-widest text-white">LUCKY777</h1>
           <p className="text-[#83a561] mt-2 font-mono text-sm uppercase">Admin Command Center</p>
         </div>
 

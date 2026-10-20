@@ -1,19 +1,12 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import type { Bet } from "@workspace/api-client-react";
+
 import { useColors } from "@/hooks/useColors";
 
 interface BetCardProps {
-  bet: {
-    id: string;
-    marketName?: string;
-    betType: string;
-    number: string;
-    amount: number;
-    status: string;
-    winAmount?: number | null;
-    createdAt: string;
-  };
+  bet: Bet;
 }
 
 export function BetCard({ bet }: BetCardProps) {
@@ -65,11 +58,11 @@ export function BetCard({ bet }: BetCardProps) {
 
   return (
     <View style={s.card}>
-      <Text style={s.number}>{bet.number}</Text>
+      <Text style={s.number}>{bet.numbers.map((n) => n.number).join(", ")}</Text>
       <View style={s.left}>
         <Text style={s.marketName}>{bet.marketName ?? "Market"}</Text>
         <Text style={s.detail}>
-          {bet.betType.toUpperCase()} •{" "}
+          {bet.gameType.toUpperCase()} •{" "}
           {new Date(bet.createdAt).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
@@ -77,7 +70,7 @@ export function BetCard({ bet }: BetCardProps) {
         </Text>
       </View>
       <View style={s.right}>
-        <Text style={s.amount}>₹{bet.amount}</Text>
+        <Text style={s.amount}>₹{bet.totalAmount}</Text>
         {bet.winAmount ? <Text style={s.winAmount}>+₹{bet.winAmount}</Text> : null}
         <View style={s.badge}>
           <Text style={s.badgeText}>{bet.status}</Text>

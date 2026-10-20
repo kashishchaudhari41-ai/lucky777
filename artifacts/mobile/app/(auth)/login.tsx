@@ -83,7 +83,7 @@ export default function LoginScreen() {
               source={require("@/assets/images/icon.png")}
               style={s.logo}
             />
-            <Text style={s.brand}>OUR EMPIRE</Text>
+            <Text style={s.brand}>LUCKY777</Text>
             <Text style={s.tagline}>Satta Matka</Text>
           </View>
 
