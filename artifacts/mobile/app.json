@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "lucky777",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -19,7 +19,7 @@
     "android": {
       "backgroundColor": "#0a0a0a",
       "package": "com.lucky777.sattamatka",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/images/icon.png",
