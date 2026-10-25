@@ -157,3 +157,14 @@ ALTER TABLE user_notifications ADD COLUMN IF NOT EXISTS notification_id UUID;
 -- A UPI transaction ID (UTR) can be submitted only once, ever
 CREATE UNIQUE INDEX IF NOT EXISTS uq_transactions_deposit_utr
   ON transactions (utr_number) WHERE type = 'deposit' AND utr_number IS NOT NULL;
+
+-- Phone push-notification tokens (Expo)
+CREATE TABLE IF NOT EXISTS push_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token TEXT UNIQUE NOT NULL,
+  platform VARCHAR(20) DEFAULT 'android',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_push_tokens_user_id ON push_tokens(user_id);

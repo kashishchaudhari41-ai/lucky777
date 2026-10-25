@@ -82,6 +82,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout() {
+    // Stop pushes for this player on this phone (best effort, must happen while still logged in)
+    try {
+      const pushToken = await AsyncStorage.getItem("lucky777_push_token");
+      if (pushToken && token && process.env.EXPO_PUBLIC_DOMAIN) {
+        await fetch(`https://${process.env.EXPO_PUBLIC_DOMAIN}/api/user/push-token`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ token: pushToken }),
+        });
+      }
+      await AsyncStorage.removeItem("lucky777_push_token");
+    } catch {}
     await Promise.all([
       AsyncStorage.removeItem(TOKEN_KEY),
       AsyncStorage.removeItem(USER_KEY),

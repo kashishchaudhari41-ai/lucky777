@@ -78,3 +78,17 @@ After each new APK build, set `APK_URL` on Render to the new build's `.apk` link
 - Login, register and API calls are rate limited per IP; blocked users lose access immediately.
 - Cross-site browser access (CORS) is off unless you set `CORS_ORIGINS`.
 - Change the seeded admin password, keep `JWT_SECRET` long and secret, and rotate any credential that has been pasted into chat or email.
+
+## Push notifications (Android)
+The server sends a push whenever a player gets an in-app notification (deposit approved, bet won, withdrawal paid, admin broadcast...). The app registers its phone token after login and removes it on logout. Android needs a free Firebase project to deliver pushes:
+
+1. https://console.firebase.google.com → **Add project** (e.g. Lucky777) → add an **Android app** with package name `com.lucky777.app` → download **google-services.json**.
+2. Firebase → Project settings → **Service accounts** → **Generate new private key** (a JSON file).
+3. Give the key to Expo: `cd artifacts/mobile && npx eas-cli credentials` → Android → *preview* → *Google Service Account* → *Manage your Google Service Account Key for Push Notifications (FCM V1)* → upload the JSON.
+4. Store google-services.json as an EAS file secret (it is git-ignored on purpose):
+   ```bash
+   npx eas-cli env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json --scope project --visibility sensitive --environment preview --environment production
+   ```
+5. Rebuild the APK (`npx eas-cli build -p android --profile preview`). Players must tap **Allow** on the notification permission prompt.
+
+Optional: set `EXPO_ACCESS_TOKEN` on Render (expo.dev → Access tokens) to enable Expo's enhanced push security.

@@ -30,6 +30,15 @@ const STATEMENTS = [
   `UPDATE app_settings SET value = '200' WHERE key = 'min_deposit' AND value = '100'`,
   `UPDATE app_settings SET value = '500' WHERE key = 'min_withdrawal' AND value = '100'`,
   `INSERT INTO app_settings (key, value) VALUES ('payout_single', '9'), ('payout_jodi', '90'), ('payout_panna', '140') ON CONFLICT (key) DO NOTHING`,
+  `CREATE TABLE IF NOT EXISTS push_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token TEXT UNIQUE NOT NULL,
+  platform VARCHAR(20) DEFAULT 'android',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+)`,
+  `CREATE INDEX IF NOT EXISTS idx_push_tokens_user_id ON push_tokens(user_id)`,
   `CREATE UNIQUE INDEX IF NOT EXISTS uq_transactions_deposit_utr
   ON transactions (utr_number) WHERE type = 'deposit' AND utr_number IS NOT NULL`,
 ];

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
+import { sendPush } from "../lib/push.js";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.post("/admin/notifications/send", requireAdminAuth, async (req, res) => {
       await pool.query("INSERT INTO user_notifications (user_id, notification_id, title, message, type) VALUES ($1, $2, $3, $4, $5)",
         [uid, notifId, title, message, type]);
     }
+    void sendPush(userIds, title, message, { type });
     res.json({ message: `Notification sent to ${userIds.length} users`, success: true });
   } catch (err) {
     req.log?.error(err);
