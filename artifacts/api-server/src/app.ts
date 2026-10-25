@@ -97,21 +97,22 @@ async function latestExpoApkUrl(): Promise<string | null> {
   return latestCache.url;
 }
 
-async function resolveApkUrl(): Promise<string> {
-  if (process.env.APK_URL) return process.env.APK_URL;
+async function resolveApkUrl(): Promise<{ url: string; source: "pinned" | "expo-latest" | "fallback" }> {
+  if (process.env.APK_URL) return { url: process.env.APK_URL, source: "pinned" };
   try {
     const latest = await latestExpoApkUrl();
-    if (latest) return latest;
+    if (latest) return { url: latest, source: "expo-latest" };
   } catch (err) {
     logger.warn({ err }, "Could not look up latest Expo build; using fallback APK");
   }
-  return latestCache?.url ?? DEFAULT_APK_URL;
+  return { url: DEFAULT_APK_URL, source: "fallback" };
 }
 
 // Stable public download address for the Android app: https://<host>/download
 // Streamed through this server so the file is always named Lucky777.apk with the Android package type.
 app.get("/download", async (_req, res) => {
-  const url = await resolveApkUrl();
+  const { url, source } = await resolveApkUrl();
+  res.setHeader("X-Apk-Source", source); // pinned | expo-latest | fallback - handy to confirm the token works
   try {
     const upstream = await fetch(url, { redirect: "follow" });
     if (!upstream.ok || !upstream.body) throw new Error(`upstream ${upstream.status}`);
