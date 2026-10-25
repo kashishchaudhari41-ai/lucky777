@@ -67,11 +67,12 @@ Render → service → Settings → Custom Domains → add `api.yourdomain.com`,
 | Address | What |
 |---|---|
 | `/` | Public landing page with the **Download APK** button (`artifacts/landing`) |
-| `/download` | Streams the APK as `Lucky777.apk`. Source is the `APK_URL` env var on Render (defaults to the latest build) |
+| `/download` | Streams the APK as `Lucky777.apk`. Serves your **newest finished Android build automatically** (needs `EXPO_ACCESS_TOKEN` on Render); `APK_URL` pins a specific file instead |
 | `/admin/` | Admin panel (phone friendly). Not indexed by search engines |
 | `/api/*` | REST API |
 
-After each new APK build, set `APK_URL` on Render to the new build's `.apk` link (Expo build page → "Install" link) so the landing page serves the newest app. Expo keeps build files for a limited time, so keep a copy of the APK you share long term.
+**Automatic latest APK:** on Render add `EXPO_ACCESS_TOKEN` (expo.dev → Account settings → Access tokens). The server then looks up the newest finished Android build every 5 minutes, so the landing page always downloads the app you built last, with no redeploy. Without the token it serves the build that was current at release time.
+Expo deletes build files after about 30 days, so rebuild at least monthly (or keep a copy of the APK and pin it with `APK_URL`).
 
 ## Security notes
 - Password reset by phone is disabled (there is no SMS provider to verify the owner). Reset a player's password from the admin API `PUT /api/admin/users/:id/password`.
