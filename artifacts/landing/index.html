@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0f0a" />
-  <title>Lucky777 – Download the App</title>
-  <meta name="description" content="Download the Lucky777 Android app. Play Satta Matka markets, add money with UPI QR and withdraw to your UPI ID. 18+ only." />
+  <title>Lucky777 – ऐप डाउनलोड करें</title>
+  <meta name="description" content="Lucky777 Android ऐप डाउनलोड करें। सट्टा मटका मार्केट खेलें, UPI QR से पैसे जोड़ें और अपनी UPI ID में निकालें। केवल 18+ के लिए।" />
   <link rel="icon" type="image/png" href="/logo.png" />
-  <meta property="og:title" content="Lucky777 – Download the App" />
-  <meta property="og:description" content="Official Lucky777 Android app. 18+ only." />
+  <meta property="og:title" content="Lucky777 – ऐप डाउनलोड करें" />
+  <meta property="og:description" content="Lucky777 का आधिकारिक Android ऐप। केवल 18+ के लिए।" />
   <meta property="og:image" content="/logo.png" />
   <style>
     :root {
@@ -18,18 +18,20 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", "Mukta", Inter, Arial, sans-serif;
       background: radial-gradient(1200px 600px at 50% -200px, #1a4718 0%, var(--bg) 60%) no-repeat, var(--bg);
-      color: var(--text); line-height: 1.55; min-height: 100vh;
+      color: var(--text); line-height: 1.6; min-height: 100vh;
     }
     .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 20px; }
-    header { padding: 18px 0; display: flex; align-items: center; justify-content: space-between; }
+    header { padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .12em; color: var(--lime); text-decoration: none; }
     .brand img { width: 40px; height: 40px; border-radius: 10px; }
-    .age { font-size: 12px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 4px 10px; font-weight: 700; }
+    .right { display: flex; align-items: center; gap: 8px; }
+    .age { font-size: 12px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 4px 10px; font-weight: 700; white-space: nowrap; }
+    .lang { font: inherit; font-size: 13px; font-weight: 700; color: var(--lime); background: transparent; border: 1px solid var(--leaf); border-radius: 999px; padding: 4px 12px; cursor: pointer; min-height: 30px; }
     .hero { text-align: center; padding: 36px 0 28px; }
     .hero img { width: 132px; height: 132px; border-radius: 28px; box-shadow: 0 12px 40px rgba(72,114,62,.45); }
-    h1 { font-size: clamp(30px, 8vw, 52px); line-height: 1.1; margin: 22px 0 12px; }
+    h1 { font-size: clamp(30px, 8vw, 52px); line-height: 1.2; margin: 22px 0 12px; }
     h1 span { color: var(--gold); }
     .sub { color: var(--muted); font-size: clamp(15px, 4vw, 18px); max-width: 560px; margin: 0 auto; }
     .btn {
@@ -63,54 +65,79 @@
   <div class="wrap">
     <header>
       <a class="brand" href="/"><img src="/logo.png" alt="" /> LUCKY777</a>
-      <span class="age">18+ ONLY</span>
+      <div class="right">
+        <span class="age" data-hi="केवल 18+" data-en="18+ ONLY">केवल 18+</span>
+        <button class="lang" id="lang" type="button" aria-label="Language">English</button>
+      </div>
     </header>
 
     <main>
       <div class="hero">
-        <img src="/logo.png" alt="Lucky777 logo" />
-        <h1>Lucky<span>777</span> for Android</h1>
-        <p class="sub">Play Satta Matka markets, add money by scanning a UPI QR and withdraw straight to your UPI ID.</p>
-        <a class="btn" href="/download" id="dl" rel="noopener">⬇ Download APK</a>
-        <p class="meta">Android 7.0 or newer · Free</p>
+        <img src="/logo.png" alt="Lucky777" />
+        <h1><span data-hi="Lucky777" data-en="Lucky777">Lucky777</span> <span style="color:var(--text)" data-hi="Android ऐप" data-en="for Android">Android ऐप</span></h1>
+        <p class="sub" data-hi="सट्टा मटका मार्केट खेलें, UPI QR स्कैन करके पैसे जोड़ें और सीधे अपनी UPI ID में निकालें।" data-en="Play Satta Matka markets, add money by scanning a UPI QR and withdraw straight to your UPI ID.">सट्टा मटका मार्केट खेलें, UPI QR स्कैन करके पैसे जोड़ें और सीधे अपनी UPI ID में निकालें।</p>
+        <a class="btn" href="/download" id="dl" rel="noopener"><span aria-hidden="true">⬇</span> <span data-hi="APK डाउनलोड करें" data-en="Download APK">APK डाउनलोड करें</span></a>
+        <p class="meta" data-hi="Android 7.0 या उससे नया · मुफ़्त" data-en="Android 7.0 or newer · Free">Android 7.0 या उससे नया · मुफ़्त</p>
       </div>
 
       <section>
-        <h2>How to install</h2>
+        <h2 data-hi="इंस्टॉल कैसे करें" data-en="How to install">इंस्टॉल कैसे करें</h2>
         <ol class="steps">
-          <li>Tap <b>Download APK</b> and wait for the file <b>Lucky777.apk</b> to finish downloading.</li>
-          <li>Open the file from your notifications or the <b>Downloads</b> folder.</li>
-          <li>If Android says "For your security, your phone is not allowed to install unknown apps from this source", tap <b>Settings</b> and switch on <b>Allow from this source</b>, then go back and tap <b>Install</b>.</li>
-          <li>If Play Protect shows a warning, tap <b>More details → Install anyway</b>. The app is not on the Play Store, so this warning is normal.</li>
-          <li>Open <b>Lucky777</b>, create your account and you're ready.</li>
+          <li data-hi="<b>APK डाउनलोड करें</b> दबाएँ और <b>Lucky777.apk</b> फ़ाइल पूरी डाउनलोड होने दें।" data-en="Tap <b>Download APK</b> and wait for the file <b>Lucky777.apk</b> to finish downloading.">&nbsp;</li>
+          <li data-hi="नोटिफ़िकेशन या <b>Downloads</b> फ़ोल्डर से फ़ाइल खोलें।" data-en="Open the file from your notifications or the <b>Downloads</b> folder.">&nbsp;</li>
+          <li data-hi="अगर फ़ोन कहे &quot;अज्ञात स्रोत से ऐप इंस्टॉल करने की अनुमति नहीं है&quot;, तो <b>Settings</b> दबाएँ, <b>इस स्रोत से अनुमति दें</b> चालू करें, वापस आकर <b>Install</b> दबाएँ।" data-en="If Android says &quot;your phone is not allowed to install unknown apps from this source&quot;, tap <b>Settings</b>, switch on <b>Allow from this source</b>, go back and tap <b>Install</b>.">&nbsp;</li>
+          <li data-hi="अगर Play Protect चेतावनी दिखाए तो <b>More details → Install anyway</b> दबाएँ। ऐप Play Store पर नहीं है, इसलिए यह चेतावनी सामान्य है।" data-en="If Play Protect shows a warning, tap <b>More details → Install anyway</b>. The app is not on the Play Store, so this warning is normal.">&nbsp;</li>
+          <li data-hi="<b>Lucky777</b> खोलें, अपना अकाउंट बनाएँ और शुरू करें।" data-en="Open <b>Lucky777</b>, create your account and you are ready.">&nbsp;</li>
         </ol>
-        <p class="note">Download with Chrome or your phone's default browser. Links opened inside WhatsApp or Instagram can fail to download – use "Open in browser" first.</p>
+        <p class="note" data-hi="डाउनलोड Chrome या फ़ोन के डिफ़ॉल्ट ब्राउज़र से करें। WhatsApp या Instagram के अंदर खोला गया लिंक डाउनलोड में फेल हो सकता है – पहले &quot;ब्राउज़र में खोलें&quot; चुनें। अगर पुराना Lucky777 ऐप फ़ोन में है, तो उसे पहले अनइंस्टॉल कर दें।" data-en="Download with Chrome or your phone's default browser. Links opened inside WhatsApp or Instagram can fail to download – choose &quot;Open in browser&quot; first. If an older Lucky777 app is on your phone, uninstall it first.">डाउनलोड Chrome या फ़ोन के डिफ़ॉल्ट ब्राउज़र से करें।</p>
       </section>
 
       <section>
-        <h2>Why Lucky777</h2>
+        <h2 data-hi="Lucky777 क्यों" data-en="Why Lucky777">Lucky777 क्यों</h2>
         <div class="grid three">
-          <div class="card"><h3>Live markets</h3><p>Milan, Kalyan, Rajdhani and more with open and close times and results.</p></div>
-          <div class="card"><h3>Simple UPI deposits</h3><p>Scan the QR, pay, enter your 12-digit UTR and your wallet is credited after verification.</p></div>
-          <div class="card"><h3>UPI withdrawals</h3><p>Enter your UPI ID and request a payout. No bank details or documents.</p></div>
+          <div class="card"><h3 data-hi="लाइव मार्केट" data-en="Live markets">लाइव मार्केट</h3><p data-hi="मिलन, कल्याण, राजधानी और अन्य मार्केट, खुलने-बंद होने के समय और रिज़ल्ट के साथ।" data-en="Milan, Kalyan, Rajdhani and more with open and close times and results.">मिलन, कल्याण, राजधानी और अन्य मार्केट।</p></div>
+          <div class="card"><h3 data-hi="आसान UPI जमा" data-en="Simple UPI deposits">आसान UPI जमा</h3><p data-hi="QR स्कैन करें, पेमेंट करें, 12 अंकों की UTR डालें – जाँच के बाद आपका वॉलेट क्रेडिट हो जाएगा।" data-en="Scan the QR, pay, enter your 12-digit UTR and your wallet is credited after verification.">QR स्कैन करें, पेमेंट करें, UTR डालें।</p></div>
+          <div class="card"><h3 data-hi="UPI से निकासी" data-en="UPI withdrawals">UPI से निकासी</h3><p data-hi="बस अपनी UPI ID डालें और पैसे निकालने का रिक्वेस्ट भेजें। बैंक डिटेल या डॉक्यूमेंट की ज़रूरत नहीं।" data-en="Enter your UPI ID and request a payout. No bank details or documents.">बस अपनी UPI ID डालें।</p></div>
         </div>
       </section>
 
       <section>
-        <h2>Quick answers</h2>
+        <h2 data-hi="अक्सर पूछे जाने वाले सवाल" data-en="Quick answers">अक्सर पूछे जाने वाले सवाल</h2>
         <div class="grid two">
-          <div class="card"><h3>Minimum deposit / withdrawal?</h3><p>The minimums are shown inside the app on the Add Money and Withdraw screens.</p></div>
-          <div class="card"><h3>Can I reuse a UTR?</h3><p>No. Every UPI transaction ID can be submitted only once.</p></div>
-          <div class="card"><h3>Forgot your password?</h3><p>Contact support through the links in the app and we will reset it for you.</p></div>
-          <div class="card"><h3>Is it safe?</h3><p>Only install the app from this page. We never ask for your UPI PIN or OTP.</p></div>
+          <div class="card"><h3 data-hi="कम से कम जमा / निकासी कितनी?" data-en="Minimum deposit / withdrawal?">कम से कम जमा / निकासी कितनी?</h3><p data-hi="न्यूनतम राशि ऐप में Add Money और Withdraw स्क्रीन पर दिखती है।" data-en="The minimums are shown inside the app on the Add Money and Withdraw screens.">न्यूनतम राशि ऐप में दिखती है।</p></div>
+          <div class="card"><h3 data-hi="क्या एक UTR दोबारा इस्तेमाल हो सकता है?" data-en="Can I reuse a UTR?">क्या एक UTR दोबारा इस्तेमाल हो सकता है?</h3><p data-hi="नहीं। हर UPI ट्रांज़ैक्शन ID सिर्फ़ एक बार जमा की जा सकती है।" data-en="No. Every UPI transaction ID can be submitted only once.">नहीं। हर UTR सिर्फ़ एक बार।</p></div>
+          <div class="card"><h3 data-hi="पासवर्ड भूल गए?" data-en="Forgot your password?">पासवर्ड भूल गए?</h3><p data-hi="ऐप में दिए सपोर्ट लिंक से हमसे संपर्क करें, हम आपका पासवर्ड रीसेट कर देंगे।" data-en="Contact support through the links in the app and we will reset it for you.">सपोर्ट से संपर्क करें।</p></div>
+          <div class="card"><h3 data-hi="क्या यह सुरक्षित है?" data-en="Is it safe?">क्या यह सुरक्षित है?</h3><p data-hi="ऐप सिर्फ़ इसी पेज से इंस्टॉल करें। हम कभी आपका UPI PIN या OTP नहीं माँगते।" data-en="Only install the app from this page. We never ask for your UPI PIN or OTP.">ऐप सिर्फ़ इसी पेज से इंस्टॉल करें।</p></div>
         </div>
       </section>
     </main>
 
     <footer>
-      <p><strong>18+ only.</strong> This game involves financial risk and may be restricted where you live. Play responsibly and only if it is legal in your area.</p>
+      <p data-hi="<strong>केवल 18+ के लिए।</strong> इस खेल में आर्थिक जोखिम है और यह आपके क्षेत्र में प्रतिबंधित हो सकता है। ज़िम्मेदारी से खेलें और केवल तभी खेलें जब यह आपके क्षेत्र में कानूनी हो।" data-en="<strong>18+ only.</strong> This game involves financial risk and may be restricted where you live. Play responsibly and only if it is legal in your area."><strong>केवल 18+ के लिए।</strong></p>
       <p style="margin-top:8px">© Lucky777</p>
     </footer>
   </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("lang");
+      function apply(lang) {
+        document.documentElement.lang = lang;
+        document.title = lang === "hi" ? "Lucky777 – ऐप डाउनलोड करें" : "Lucky777 – Download the App";
+        var nodes = document.querySelectorAll("[data-hi]");
+        for (var i = 0; i < nodes.length; i++) nodes[i].innerHTML = nodes[i].getAttribute("data-" + lang);
+        btn.textContent = lang === "hi" ? "English" : "हिन्दी";
+      }
+      var saved = null;
+      try { saved = localStorage.getItem("lang"); } catch (e) {}
+      var lang = saved === "en" ? "en" : "hi"; // Hindi by default
+      apply(lang);
+      btn.addEventListener("click", function () {
+        lang = lang === "hi" ? "en" : "hi";
+        try { localStorage.setItem("lang", lang); } catch (e) {}
+        apply(lang);
+      });
+    })();
+  </script>
 </body>
 </html>
