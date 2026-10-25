@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAuth } from "../middlewares/auth.js";
+import { notifyUser, inr } from "../lib/notify.js";
 import { getNumberSetting, DEFAULTS } from "../lib/settings.js";
 
 const router = Router();
@@ -24,11 +25,18 @@ router.post("/wallet/add-money-request", requireAuth, async (req, res) => {
     res.status(400).json({ error: "Enter a valid 12-digit UPI transaction ID (UTR)" }); return;
   }
   try {
+    // Application-level guard in addition to the unique database index
+    const used = await pool.query("SELECT 1 FROM transactions WHERE type = 'deposit' AND utr_number = $1 LIMIT 1", [utrNumber]);
+    if (used.rows.length > 0) {
+      res.status(409).json({ error: "This transaction ID has already been used" }); return;
+    }
     const result = await pool.query(
       `INSERT INTO transactions (user_id, type, amount, status, method, utr_number, screenshot_url)
        VALUES ($1, 'deposit', $2, 'pending', 'upi', $3, $4) RETURNING *`,
       [req.user!.userId, amount, utrNumber, screenshotUrl || null]
     );
+    await notifyUser(req.user!.userId, "Deposit request received",
+      `We received your deposit request of ${inr(amount)} (UTR ${utrNumber}). It will be credited after verification.`, "deposit");
     res.status(201).json(formatTx(result.rows[0]));
   } catch (err: any) {
     if (err?.code === "23505") {
@@ -62,6 +70,8 @@ router.post("/wallet/withdrawal-request", requireAuth, async (req, res) => {
          VALUES ($1, 'withdrawal', $2, 'pending', $3, $4) RETURNING *`,
         [req.user!.userId, amount, method, JSON.stringify(bankDetails)]
       );
+      await notifyUser(req.user!.userId, "Withdrawal requested",
+        `Your withdrawal of ${inr(amount)} to ${upiId} is pending. ${inr(amount)} was held from your wallet.`, "withdrawal", client);
       await client.query("COMMIT");
       res.status(201).json(formatTx(result.rows[0]));
     } catch (e) {

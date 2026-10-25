@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useGetMarkets, useGetRecentResults, useGetUserBalance } from "@workspace/api-client-react";
+import { useGetMarkets, useGetRecentResults, useGetUserBalance, useGetUserDashboard } from "@workspace/api-client-react";
 import { MarketCard } from "@/components/MarketCard";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
@@ -30,6 +30,9 @@ export default function HomeScreen() {
     query: { queryKey: ["userBalance", balanceTrigger] },
   });
   const { data: resultsData } = useGetRecentResults();
+  // Polled every 30s so new notifications (deposit approved, bet won...) light up the bell
+  const { data: dashData } = useGetUserDashboard({ query: { queryKey: ["userDashboard", balanceTrigger], refetchInterval: 30000 } });
+  const unread = dashData?.unreadNotifications ?? 0;
 
   const onRefresh = useCallback(() => {
     refetchMarkets();
@@ -59,6 +62,11 @@ export default function HomeScreen() {
         </View>
         <Pressable onPress={() => router.push("/notifications")} style={s.notifBtn}>
           <Feather name="bell" size={22} color={colors.text} />
+          {unread > 0 && (
+            <View style={s.bellBadge}>
+              <Text style={s.bellBadgeText}>{unread > 9 ? "9+" : unread}</Text>
+            </View>
+          )}
         </Pressable>
       </View>
 
@@ -140,6 +148,19 @@ const styles = (c: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: c.border,
     },
+    bellBadge: {
+      position: "absolute",
+      top: -4,
+      right: -4,
+      minWidth: 18,
+      height: 18,
+      borderRadius: 9,
+      paddingHorizontal: 4,
+      backgroundColor: "#ef4444",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    bellBadgeText: { color: "#fff", fontSize: 10, fontWeight: "800" },
     balanceCard: {
       marginHorizontal: 16,
       marginBottom: 20,

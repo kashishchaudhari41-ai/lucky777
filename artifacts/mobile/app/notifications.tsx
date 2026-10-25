@@ -15,6 +15,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetUserNotifications } from "@workspace/api-client-react";
 import { useColors } from "@/hooks/useColors";
 
+const ICONS: Record<string, React.ComponentProps<typeof Feather>["name"]> = {
+  result: "award",
+  win: "star",
+  deposit: "arrow-down-circle",
+  withdrawal: "arrow-up-circle",
+  bet: "target",
+  account: "user",
+};
+
 export default function NotificationsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -49,7 +58,7 @@ export default function NotificationsScreen() {
             <View style={[s.item, !item.isRead && s.itemUnread]}>
               <View style={s.iconWrap}>
                 <Feather
-                  name={item.type === "result" ? "award" : item.type === "win" ? "star" : "bell"}
+                  name={ICONS[item.type] ?? "bell"}
                   size={18}
                   color={colors.primary}
                 />

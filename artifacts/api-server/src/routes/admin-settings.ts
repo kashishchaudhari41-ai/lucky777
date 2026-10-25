@@ -65,9 +65,19 @@ router.get("/admin/settings/upi", requireAdminAuth, async (req, res) => {
   })) });
 });
 
+const UPI_RE = /^[\w.\-]{2,}@[A-Za-z][A-Za-z0-9.\-]{1,}$/;
+// QR must be a PNG/JPEG/WEBP data URL (<= ~2MB) or an https link; anything else (svg, javascript:) is refused
+function validQr(v: unknown): boolean {
+  if (v === undefined || v === null || v === "") return true;
+  if (typeof v !== "string" || v.length > 2_800_000) return false;
+  return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v) || /^https:\/\/[^\s]+$/.test(v);
+}
+
 router.post("/admin/settings/upi", requireAdminAuth, async (req, res) => {
   const { upiId, qrCodeUrl, isActive } = req.body;
   if (!upiId) { res.status(400).json({ error: "upiId required" }); return; }
+  if (!UPI_RE.test(String(upiId).trim())) { res.status(400).json({ error: "Enter a valid UPI ID (e.g. name@upi)" }); return; }
+  if (!validQr(qrCodeUrl)) { res.status(400).json({ error: "QR must be a PNG/JPEG/WEBP image under 2 MB" }); return; }
   const result = await pool.query(
     "INSERT INTO upi_accounts (upi_id, qr_code_url, is_active) VALUES ($1, $2, $3) RETURNING *",
     [upiId, qrCodeUrl || null, isActive !== false]
@@ -78,6 +88,8 @@ router.post("/admin/settings/upi", requireAdminAuth, async (req, res) => {
 
 router.put("/admin/settings/upi/:id", requireAdminAuth, async (req, res) => {
   const { upiId, qrCodeUrl, isActive } = req.body;
+  if (upiId !== undefined && !UPI_RE.test(String(upiId).trim())) { res.status(400).json({ error: "Enter a valid UPI ID (e.g. name@upi)" }); return; }
+  if (!validQr(qrCodeUrl)) { res.status(400).json({ error: "QR must be a PNG/JPEG/WEBP image under 2 MB" }); return; }
   await pool.query(
     "UPDATE upi_accounts SET upi_id = COALESCE($1, upi_id), qr_code_url = COALESCE($2, qr_code_url), is_active = COALESCE($3, is_active) WHERE id = $4",
     [upiId, qrCodeUrl, isActive, req.params.id]

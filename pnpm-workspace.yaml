@@ -76,6 +76,10 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
+  # security patches for transitive dependencies of express (pnpm audit)
+  "proxy-addr": ">=2.0.8"
+  "body-parser": ">=2.4.0"
+  "qs": ">=6.16.0"
   # replit uses linux-x64 only, we can exclude all other platforms
   "esbuild>@esbuild/darwin-arm64": "-"
   "esbuild>@esbuild/darwin-x64": "-"

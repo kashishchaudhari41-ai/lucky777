@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
+import { notifyUser, inr } from "../lib/notify.js";
 import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
@@ -46,6 +47,9 @@ router.post("/bets/place", requireAuth, async (req, res) => {
         `INSERT INTO transactions (user_id, type, amount, status, method) VALUES ($1, 'bet', $2, 'completed', 'wallet')`,
         [req.user!.userId, totalAmount]
       );
+      const mk = await client.query("SELECT name FROM markets WHERE id = $1", [marketId]);
+      await notifyUser(req.user!.userId, "Bet placed",
+        `${inr(totalAmount)} on ${mk.rows[0]?.name ?? "market"} (${String(gameType).toUpperCase()}). Good luck!`, "bet", client);
       await client.query("COMMIT");
       const bet = betRes.rows[0];
       const mName = await pool.query("SELECT name FROM markets WHERE id = $1", [marketId]);
@@ -93,6 +97,7 @@ router.delete("/bets/:id", requireAuth, async (req, res) => {
       res.status(400).json({ error: "Can only cancel pending bets" }); return;
     }
     await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [bet.rows[0].total_amount, req.user!.userId]);
+    await notifyUser(req.user!.userId, "Bet cancelled", `Your bet was cancelled and ${inr(bet.rows[0].total_amount)} was refunded.`, "bet", client);
     await client.query("COMMIT");
     res.json({ message: "Bet cancelled", success: true });
   } catch (e) {

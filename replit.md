@@ -12,9 +12,8 @@ A complete Satta Matka betting platform with Android mobile app, admin panel, an
 
 ## Credentials
 
-- Admin panel login: `admin` / `Admin@123`  (or `ourempire` / `Ourempire@#000#@`)
+- Admin panel login: created by you (the demo seed accounts are for local testing only)
 - Admin panel URL: preview pane at `/` (served by API server)
-- Demo app user: phone `9876543210`, password `Test@1234`
 
 ## Stack
 

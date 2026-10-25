@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
+import { notifyUser, inr } from "../lib/notify.js";
 import { requireAdminAuth } from "../middlewares/auth.js";
 
 const router = Router();
@@ -16,7 +17,7 @@ function formatTx(t: any) {
 router.get("/admin/transactions/deposits", requireAdminAuth, async (req, res) => {
   const { status, page = 1 } = req.query;
   const limit = 20;
-  const offset = (Number(page) - 1) * limit;
+  const offset = (Math.max(1, Math.floor(Number(page)) || 1) - 1) * limit;
   const conditions = ["t.type = 'deposit'"];
   const params: any[] = [];
   let idx = 1;
@@ -35,7 +36,7 @@ router.get("/admin/transactions/deposits", requireAdminAuth, async (req, res) =>
 router.get("/admin/transactions/withdrawals", requireAdminAuth, async (req, res) => {
   const { status, page = 1 } = req.query;
   const limit = 20;
-  const offset = (Number(page) - 1) * limit;
+  const offset = (Math.max(1, Math.floor(Number(page)) || 1) - 1) * limit;
   const conditions = ["t.type = 'withdrawal'"];
   const params: any[] = [];
   let idx = 1;
@@ -65,6 +66,8 @@ router.put("/admin/transactions/deposits/:id/approve", requireAdminAuth, async (
       res.status(400).json({ error: "Deposit not found or already processed" }); return;
     }
     await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [upd.rows[0].amount, upd.rows[0].user_id]);
+    await notifyUser(upd.rows[0].user_id, "Deposit approved",
+      `${inr(upd.rows[0].amount)} has been added to your wallet. Happy playing!`, "deposit", client);
     await client.query("COMMIT");
     res.json({ message: "Deposit approved", success: true });
   } catch (e) {
@@ -78,19 +81,24 @@ router.put("/admin/transactions/deposits/:id/approve", requireAdminAuth, async (
 router.put("/admin/transactions/deposits/:id/reject", requireAdminAuth, async (req, res) => {
   const { reason } = req.body;
   const upd = await pool.query(
-    "UPDATE transactions SET status = 'rejected', admin_note = $1, processed_at = NOW(), processed_by = $2 WHERE id = $3 AND type = 'deposit' AND status = 'pending'",
+    "UPDATE transactions SET status = 'rejected', admin_note = $1, processed_at = NOW(), processed_by = $2 WHERE id = $3 AND type = 'deposit' AND status = 'pending' RETURNING user_id, amount",
     [reason, req.admin!.adminId, req.params.id]
   );
   if (upd.rowCount === 0) { res.status(400).json({ error: "Deposit not found or already processed" }); return; }
+  await notifyUser(upd.rows[0].user_id, "Deposit rejected",
+    `Your deposit of ${inr(upd.rows[0].amount)} could not be verified${reason ? `: ${reason}` : ""}. Contact support if you already paid.`, "deposit");
   res.json({ message: "Deposit rejected", success: true });
 });
 
 router.put("/admin/transactions/withdrawals/:id/complete", requireAdminAuth, async (req, res) => {
   const upd = await pool.query(
-    "UPDATE transactions SET status = 'completed', processed_at = NOW(), processed_by = $1 WHERE id = $2 AND type = 'withdrawal' AND status = 'pending'",
+    "UPDATE transactions SET status = 'completed', processed_at = NOW(), processed_by = $1 WHERE id = $2 AND type = 'withdrawal' AND status = 'pending' RETURNING user_id, amount, bank_details",
     [req.admin!.adminId, req.params.id]
   );
   if (upd.rowCount === 0) { res.status(400).json({ error: "Withdrawal not found or already processed" }); return; }
+  const to = upd.rows[0].bank_details?.upiId;
+  await notifyUser(upd.rows[0].user_id, "Withdrawal paid",
+    `${inr(upd.rows[0].amount)} has been sent${to ? ` to ${to}` : ""}.`, "withdrawal");
   res.json({ message: "Withdrawal completed", success: true });
 });
 
@@ -108,6 +116,8 @@ router.put("/admin/transactions/withdrawals/:id/reject", requireAdminAuth, async
       res.status(400).json({ error: "Withdrawal not found or already processed" }); return;
     }
     await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [upd.rows[0].amount, upd.rows[0].user_id]);
+    await notifyUser(upd.rows[0].user_id, "Withdrawal rejected",
+      `Your withdrawal was rejected${reason ? `: ${reason}` : ""}. ${inr(upd.rows[0].amount)} was returned to your wallet.`, "withdrawal", client);
     await client.query("COMMIT");
     res.json({ message: "Withdrawal rejected, amount refunded", success: true });
   } catch (e) {

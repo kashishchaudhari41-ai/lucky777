@@ -13,7 +13,7 @@ const adminPanelDist = path.resolve(__dirname, "../../../artifacts/admin-panel/d
 const landingDir = path.resolve(__dirname, "../../../artifacts/landing");
 
 // Where the "Download" button points. Set APK_URL on Render to change it without a redeploy.
-const DEFAULT_APK_URL = "https://expo.dev/artifacts/eas/gejNRc3ndbDK9Ax5WgSafjHwxts376JMjWN1z01GQfg.apk";
+const DEFAULT_APK_URL = "https://expo.dev/artifacts/eas/PUhTn0g9xidvfELacY7Mh82Q80CH1eeSaWBVwyhDTzw.apk";
 
 const app: Express = express();
 

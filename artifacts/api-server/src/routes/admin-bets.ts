@@ -15,7 +15,7 @@ function formatBet(b: any) {
 router.get("/admin/bets", requireAdminAuth, async (req, res) => {
   const { market, status, date, page = 1 } = req.query;
   const limit = 20;
-  const offset = (Number(page) - 1) * limit;
+  const offset = (Math.max(1, Math.floor(Number(page)) || 1) - 1) * limit;
   const conditions: string[] = [];
   const params: any[] = [];
   let idx = 1;

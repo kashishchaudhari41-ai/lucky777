@@ -21,5 +21,4 @@ Seed script: `scripts/seed-demo-data.mjs` — requires pg/bcrypt; run from api-s
 Or use psql directly with bcrypt hashes for admin users.
 
 ## Credentials (seeded)
-- Admin: `admin` / `Admin@123` and `ourempire` / `Ourempire@#000#@`
-- Demo user: phone `9876543210`, password `Test@1234`
+- Admin / demo logins: see scripts/seed-demo-data.sql (local testing only)

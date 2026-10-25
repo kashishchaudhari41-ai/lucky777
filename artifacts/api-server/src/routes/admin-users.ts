@@ -1,5 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
+import { notifyUser, inr } from "../lib/notify.js";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
 
@@ -16,8 +17,10 @@ function formatUser(u: any) {
 }
 
 router.get("/admin/users", requireAdminAuth, async (req, res) => {
-  const { search, status, page = 1, limit = 20 } = req.query;
-  const offset = (Number(page) - 1) * Number(limit);
+  const { search, status } = req.query;
+  const page = Math.max(1, Math.floor(Number(req.query.page)) || 1);
+  const limit = Math.min(100, Math.max(1, Math.floor(Number(req.query.limit)) || 20));
+  const offset = (page - 1) * limit;
   const conditions: string[] = [];
   const params: any[] = [];
   let paramIdx = 1;
@@ -25,7 +28,7 @@ router.get("/admin/users", requireAdminAuth, async (req, res) => {
   if (status) { conditions.push(`u.status = $${paramIdx}`); params.push(status); paramIdx++; }
   const where = conditions.length ? "WHERE " + conditions.join(" AND ") : "";
   const countRes = await pool.query(`SELECT COUNT(*) FROM users u ${where}`, params);
-  params.push(Number(limit), offset);
+  params.push(limit, offset);
   const result = await pool.query(
     `SELECT u.id, u.full_name, u.phone, u.email, u.balance, u.referral_code, u.status, u.kyc_status, u.created_at, u.last_login,
      COUNT(b.id) as total_bets,
@@ -36,7 +39,7 @@ router.get("/admin/users", requireAdminAuth, async (req, res) => {
     params
   );
   const total = parseInt(countRes.rows[0].count);
-  res.json({ users: result.rows.map(formatUser), total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
+  res.json({ users: result.rows.map(formatUser), total, page: page, totalPages: Math.ceil(total / limit) });
 });
 
 router.get("/admin/users/:id", requireAdminAuth, async (req, res) => {
@@ -59,6 +62,8 @@ router.put("/admin/users/:id/status", requireAdminAuth, async (req, res) => {
   await pool.query("UPDATE users SET status = $1 WHERE id = $2", [status, req.params.id]);
   await pool.query("INSERT INTO activity_logs (admin_id, action, details) VALUES ($1, $2, $3)",
     [req.admin!.adminId, "user_status_change", JSON.stringify({ userId: req.params.id, status })]);
+  await notifyUser(String(req.params.id), status === "active" ? "Account re-activated" : "Account restricted",
+    status === "active" ? "Your account is active again. Welcome back!" : "Your account has been restricted. Please contact support.", "account");
   res.json({ message: `User ${status}`, success: true });
 });
 
@@ -72,6 +77,7 @@ router.put("/admin/users/:id/password", requireAdminAuth, async (req, res) => {
   if (r.rowCount === 0) { res.status(404).json({ error: "User not found" }); return; }
   await pool.query("INSERT INTO activity_logs (admin_id, action, details) VALUES ($1, $2, $3)",
     [req.admin!.adminId, "user_password_reset", JSON.stringify({ userId: req.params.id })]);
+  await notifyUser(String(req.params.id), "Password changed", "Your password was reset by support. If you did not ask for this, contact us right away.", "account");
   res.json({ message: "Password reset", success: true });
 });
 
@@ -92,6 +98,8 @@ router.put("/admin/users/:id/balance", requireAdminAuth, async (req, res) => {
     );
     await client.query("INSERT INTO activity_logs (admin_id, action, details) VALUES ($1, $2, $3)",
       [req.admin!.adminId, "balance_adjustment", JSON.stringify({ userId: req.params.id, amount, reason })]);
+    await notifyUser(String(req.params.id), amount > 0 ? "Wallet credited" : "Wallet debited",
+      `${inr(Math.abs(amount))} ${amount > 0 ? "added to" : "deducted from"} your wallet by admin. Reason: ${reason}`, "account", client);
     await client.query("COMMIT");
     res.json({ message: "Balance adjusted", success: true });
   } catch (e) {

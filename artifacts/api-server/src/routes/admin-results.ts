@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
+import { notifyUser, inr } from "../lib/notify.js";
 import { getNumberSetting } from "../lib/settings.js";
 
 const router = Router();
@@ -48,6 +49,12 @@ async function settleWinners(resultId: string, marketId: string, openNumber: str
         "UPDATE bets SET status = $1, win_amount = $2, result_id = $3, settled_at = NOW() WHERE id = $4 AND status = 'pending' RETURNING id",
         [status, winAmt, resultId, bet.id]);
       if (settled.rows.length === 0) { await client.query("ROLLBACK"); continue; }
+      const mk = await client.query("SELECT name FROM markets WHERE id = $1", [marketId]);
+      const mName = mk.rows[0]?.name ?? "market";
+      await notifyUser(bet.user_id, won ? "You won! 🎉" : "Result declared",
+        won ? `You won ${inr(winAmt)} on ${mName}. It has been added to your wallet.`
+            : `Your ${inr(bet.total_amount)} bet on ${mName} did not win this time. Better luck next round!`,
+        won ? "win" : "result", client);
       if (won && winAmt > 0) {
         await client.query("UPDATE users SET balance = balance + $1 WHERE id = $2", [winAmt, bet.user_id]);
         await client.query("INSERT INTO transactions (user_id, type, amount, status, method) VALUES ($1, 'win', $2, 'completed', 'wallet')",

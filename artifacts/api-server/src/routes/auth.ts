@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import { pool } from "@workspace/db";
 import { requireAuth, signUserToken } from "../middlewares/auth.js";
+import { notifyUser, inr } from "../lib/notify.js";
 
 const router = Router();
 
@@ -47,6 +48,7 @@ router.post("/auth/register", async (req, res) => {
     );
     const user = result.rows[0];
     const token = signUserToken({ userId: user.id, phone: user.phone });
+    await notifyUser(user.id, "Welcome to Lucky777 🎉", "Your account is ready. Add money with the UPI QR and start playing. Play responsibly.", "info");
     res.status(201).json({
       token,
       user: {

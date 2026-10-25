@@ -9,6 +9,7 @@
  *  - Default app settings
  *  - 3 demo users  (password: Test@1234)
  */
+console.warn("NEVER RUN THIS ON PRODUCTION: it creates admin/demo accounts with publicly known passwords.");
 
 import { createRequire } from "module";
 import { fileURLToPath } from "url";

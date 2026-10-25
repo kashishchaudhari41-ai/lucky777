@@ -29,7 +29,7 @@ export DATABASE_URL="postgres://user:pass@host:5432/dbname"   # PowerShell: $env
 psql "$DATABASE_URL" -f scripts/create-schema.sql
 psql "$DATABASE_URL" -f scripts/seed-demo-data.sql
 ```
-Seed logins: admin panel `admin` / `Admin@123` (also `ourempire` / `Ourempire@#000#@`); demo app user phone `9876543210` / `Test@1234`. **Change these before going live.**
+The demo seed (`seed-demo-data.sql`) creates test accounts with well-known passwords. **Use it only on a throw-away local database, never on production.** For production create your own admin with a strong password.
 
 ## 4. Run the API (port 8080)
 ```bash

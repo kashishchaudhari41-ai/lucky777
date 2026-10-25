@@ -1,3 +1,4 @@
+-- NEVER RUN ON PRODUCTION: creates admin/demo accounts with publicly known passwords.
 -- ============================================================
 -- Lucky777 - Satta Matka  |  Demo Seed Data
 -- Run: psql "$DATABASE_URL" -f scripts/seed-demo-data.sql
