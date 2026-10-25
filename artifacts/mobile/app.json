@@ -19,7 +19,7 @@
     "android": {
       "backgroundColor": "#0b0f0a",
       "package": "com.lucky777.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0b0f0a"
