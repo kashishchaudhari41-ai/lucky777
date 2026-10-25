@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Lucky777 - Satta Matka",
+    "name": "Lucky777",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,26 +9,39 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0a0a0a"
+      "backgroundColor": "#0b0f0a"
     },
     "ios": {
       "supportsTablet": false
     },
     "android": {
-      "backgroundColor": "#0a0a0a",
-      "package": "com.lucky777.sattamatka",
-      "versionCode": 3
+      "backgroundColor": "#0b0f0a",
+      "package": "com.lucky777.app",
+      "versionCode": 10,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0b0f0a"
+      },
+      "allowBackup": false
     },
     "web": {
       "favicon": "./assets/images/icon.png",
-      "backgroundColor": "#0a0a0a"
+      "backgroundColor": "#0b0f0a"
     },
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "buildArchs": ["arm64-v8a", "armeabi-v7a"]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -42,11 +42,11 @@ pnpm --filter @workspace/api-server run start
 ## 5. Run the admin panel (port 5173)
 ```bash
 # bash
-PORT=5173 BASE_PATH=/ pnpm --filter @workspace/admin-panel run dev
+PORT=5173 BASE_PATH=/admin/ pnpm --filter @workspace/admin-panel run dev
 # PowerShell
-$env:PORT=5173; $env:BASE_PATH="/"; pnpm --filter @workspace/admin-panel run dev
+$env:PORT=5173; $env:BASE_PATH="/admin/"; pnpm --filter @workspace/admin-panel run dev
 ```
-(In Git Bash, `BASE_PATH=/` gets mangled; use PowerShell.) Open http://localhost:5173.
+(In Git Bash, `BASE_PATH=/` gets mangled; use PowerShell.) Open http://localhost:5173/admin/ .
 
 ## 6. Run the mobile app
 ```bash

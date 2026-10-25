@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { pool } from "@workspace/db";
 
 if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET must be set in production");
@@ -26,20 +27,37 @@ declare global {
   }
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
   const token = authHeader.split(" ")[1];
+  let payload: AuthPayload;
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
-    req.user = payload;
-    next();
+    payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
   } catch {
     res.status(401).json({ error: "Invalid token" });
+    return;
   }
+  if (!payload.userId) {
+    res.status(401).json({ error: "Invalid token" });
+    return;
+  }
+  try {
+    // Blocked / suspended users lose access immediately, not when their token expires
+    const u = await pool.query("SELECT status FROM users WHERE id = $1", [payload.userId]);
+    if (u.rows.length === 0 || u.rows[0].status !== "active") {
+      res.status(403).json({ error: "Account blocked" });
+      return;
+    }
+  } catch {
+    res.status(500).json({ error: "Auth check failed" });
+    return;
+  }
+  req.user = payload;
+  next();
 }
 
 export function requireAdminAuth(req: Request, res: Response, next: NextFunction) {

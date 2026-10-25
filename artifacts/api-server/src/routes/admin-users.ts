@@ -1,4 +1,5 @@
 import { Router } from "express";
+import bcrypt from "bcrypt";
 import { pool } from "@workspace/db";
 import { requireAdminAuth } from "../middlewares/auth.js";
 
@@ -61,8 +62,26 @@ router.put("/admin/users/:id/status", requireAdminAuth, async (req, res) => {
   res.json({ message: `User ${status}`, success: true });
 });
 
+router.put("/admin/users/:id/password", requireAdminAuth, async (req, res) => {
+  const { newPassword } = req.body;
+  if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 72) {
+    res.status(400).json({ error: "Password must be 8 to 72 characters" }); return;
+  }
+  const hash = await bcrypt.hash(newPassword, 10);
+  const r = await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [hash, req.params.id]);
+  if (r.rowCount === 0) { res.status(404).json({ error: "User not found" }); return; }
+  await pool.query("INSERT INTO activity_logs (admin_id, action, details) VALUES ($1, $2, $3)",
+    [req.admin!.adminId, "user_password_reset", JSON.stringify({ userId: req.params.id })]);
+  res.json({ message: "Password reset", success: true });
+});
+
 router.put("/admin/users/:id/balance", requireAdminAuth, async (req, res) => {
-  const { amount, reason } = req.body;
+  const amount = Number(req.body.amount);
+  const reason = String(req.body.reason ?? "").slice(0, 300);
+  if (!Number.isFinite(amount) || amount === 0 || Math.abs(amount) > 1_000_000) {
+    res.status(400).json({ error: "Enter a non-zero amount up to ₹10,00,000" }); return;
+  }
+  if (!reason.trim()) { res.status(400).json({ error: "A reason is required" }); return; }
   const client = await pool.connect();
   try {
     await client.query("BEGIN");

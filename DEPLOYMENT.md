@@ -62,3 +62,19 @@ Render → service → Settings → Custom Domains → add `api.yourdomain.com`,
 - **Checks:** `.github/workflows/ci.yml` runs typecheck and builds on every push / pull request.
 - **Android APK:** GitHub → Actions → **Build Android APK** → Run workflow, enter your API host (e.g. `lucky777.onrender.com`). The run prints the APK download link.
   - One-time: create a free Expo account, run `eas init` in `artifacts/mobile` (this replaces the old `projectId` in `app.json` with yours), commit it, and add your Expo access token as the repository secret `EXPO_TOKEN`.
+
+## Site layout
+| Address | What |
+|---|---|
+| `/` | Public landing page with the **Download APK** button (`artifacts/landing`) |
+| `/download` | Streams the APK as `Lucky777.apk`. Source is the `APK_URL` env var on Render (defaults to the latest build) |
+| `/admin/` | Admin panel (phone friendly). Not indexed by search engines |
+| `/api/*` | REST API |
+
+After each new APK build, set `APK_URL` on Render to the new build's `.apk` link (Expo build page → "Install" link) so the landing page serves the newest app. Expo keeps build files for a limited time, so keep a copy of the APK you share long term.
+
+## Security notes
+- Password reset by phone is disabled (there is no SMS provider to verify the owner). Reset a player's password from the admin API `PUT /api/admin/users/:id/password`.
+- Login, register and API calls are rate limited per IP; blocked users lose access immediately.
+- Cross-site browser access (CORS) is off unless you set `CORS_ORIGINS`.
+- Change the seeded admin password, keep `JWT_SECRET` long and secret, and rotate any credential that has been pasted into chat or email.

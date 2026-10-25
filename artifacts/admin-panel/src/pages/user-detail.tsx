@@ -120,8 +120,8 @@ export default function UserDetail() {
           </TabsList>
           <TabsContent value="bets">
             <Card className="bg-[#1a1a1a] border-[#2a2a2a]">
-              <CardContent className="pt-4">
-                <table className="w-full text-sm">
+              <CardContent className="pt-4 overflow-x-auto">
+                <table className="w-full text-sm min-w-[560px]">
                   <thead>
                     <tr className="border-b border-[#2a2a2a]">
                       {["Market", "Type", "Numbers", "Amount", "Status", "Win", "Date"].map(h => (

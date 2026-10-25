@@ -11,6 +11,18 @@ router.post("/auth/register", async (req, res) => {
     res.status(400).json({ error: "fullName, phone, password required" });
     return;
   }
+  if (typeof fullName !== "string" || fullName.trim().length < 2 || fullName.length > 100) {
+    res.status(400).json({ error: "Enter your full name" });
+    return;
+  }
+  if (typeof phone !== "string" || !/^[6-9]\d{9}$/.test(phone)) {
+    res.status(400).json({ error: "Enter a valid 10-digit mobile number" });
+    return;
+  }
+  if (typeof password !== "string" || password.length < 8 || password.length > 72) {
+    res.status(400).json({ error: "Password must be 8 to 72 characters" });
+    return;
+  }
   try {
     const exists = await pool.query("SELECT id FROM users WHERE phone = $1", [phone]);
     if (exists.rows.length > 0) {
@@ -96,30 +108,15 @@ router.post("/auth/logout", requireAuth, async (req, res) => {
   res.json({ message: "Logged out", success: true });
 });
 
-router.post("/auth/forgot-password", async (req, res) => {
-  const { phone } = req.body;
-  const result = await pool.query("SELECT id FROM users WHERE phone = $1", [phone]);
-  if (result.rows.length === 0) {
-    res.status(404).json({ error: "Phone not found" });
-    return;
-  }
-  res.json({ message: "OTP sent (mock: 123456)", success: true });
-});
-
-router.post("/auth/verify-otp", async (req, res) => {
-  res.json({ message: "OTP verified", success: true });
-});
-
-router.post("/auth/reset-password", async (req, res) => {
-  const { phone, otp, newPassword } = req.body;
-  try {
-    const hash = await bcrypt.hash(newPassword, 10);
-    await pool.query("UPDATE users SET password_hash = $1 WHERE phone = $2", [hash, phone]);
-    res.json({ message: "Password reset successfully", success: true });
-  } catch (err) {
-    res.status(500).json({ error: "Reset failed" });
-  }
-});
+// There is no SMS provider, so self-service password reset cannot verify who is asking.
+// (It used to accept any phone number with no OTP check, which allowed account takeover.)
+// Passwords are reset by the admin (Users page) after the player contacts support.
+const resetDisabled = (_req: any, res: any) => {
+  res.status(501).json({ error: "Password reset is handled by support. Please contact us on WhatsApp/Telegram." });
+};
+router.post("/auth/forgot-password", resetDisabled);
+router.post("/auth/verify-otp", resetDisabled);
+router.post("/auth/reset-password", resetDisabled);
 
 router.get("/auth/profile", requireAuth, async (req, res) => {
   try {

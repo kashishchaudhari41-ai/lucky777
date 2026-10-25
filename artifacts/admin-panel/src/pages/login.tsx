@@ -95,13 +95,6 @@ export default function Login() {
             {loginMutation.isPending ? <Loader2 className="animate-spin h-5 w-5" /> : "ENTER COMMAND CENTER"}
           </Button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-[#2a2a2a] text-center">
-          <p className="text-xs text-[#a0a0a0] mb-2">Demo Credentials</p>
-          <div className="inline-block bg-[#1a1a1a] border border-[#2a2a2a] rounded px-4 py-2 text-sm text-[#bfdb81] font-mono">
-            ourempire / Ourempire@#000#@
-          </div>
-        </div>
       </div>
     </div>
   );
